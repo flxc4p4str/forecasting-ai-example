@@ -1,0 +1,3 @@
+#!/bin/sh
+
+node scripts/refresh-after-branch-switch.js "$@"
