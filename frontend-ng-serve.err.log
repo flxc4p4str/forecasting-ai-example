@@ -1,0 +1,912 @@
+[1m[31m[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8001: 'igx-navbar' is not a known element:
+1. If 'igx-navbar' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-navbar' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:0:0:
+[37m      0 │ [32m[37m
+        ╵ [32m^[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8002: Can't bind to 'isActionButtonVisible' since it isn't a known property of 'igx-navbar'.
+1. If 'igx-navbar' is an Angular component and it has 'isActionButtonVisible' input, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-navbar' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
+3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:1:50:
+[37m      1 │ ...ss="topbar" title="Forecasting AI" [32m[isActionButtonVisible]="false"[37m>
+        ╵                                       [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8001: 'igx-card' is not a known element:
+1. If 'igx-card' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-card' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:10:4:
+[37m      10 │     [32m<igx-card class="surface-card state-block">[37m
+         ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8001: 'igx-card-content' is not a known element:
+1. If 'igx-card-content' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-card-content' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:11:6:
+[37m      11 │       [32m<igx-card-content>[37m
+         ╵       [32m~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8001: 'igx-circular-bar' is not a known element:
+1. If 'igx-circular-bar' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-circular-bar' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:12:8:
+[37m      12 │         [32m<igx-circular-bar [indeterminate]="true" [textVisibility]=[37m...
+         ╵         [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8002: Can't bind to 'indeterminate' since it isn't a known property of 'igx-circular-bar'.
+1. If 'igx-circular-bar' is an Angular component and it has 'indeterminate' input, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-circular-bar' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
+3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:12:26:
+[37m      12 │ ...   <igx-circular-bar [32m[indeterminate]="true"[37m [textVisibility]="f...
+         ╵                         [32m~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8002: Can't bind to 'textVisibility' since it isn't a known property of 'igx-circular-bar'.
+1. If 'igx-circular-bar' is an Angular component and it has 'textVisibility' input, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-circular-bar' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
+3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:12:49:
+[37m      12 │ ...indeterminate]="true" [32m[textVisibility]="false"[37m></igx-circular-bar>
+         ╵                          [32m~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8001: 'igx-card' is not a known element:
+1. If 'igx-card' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-card' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:17:4:
+[37m      17 │     [32m<igx-card class="surface-card state-block error-state">[37m
+         ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8001: 'igx-card-content' is not a known element:
+1. If 'igx-card-content' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-card-content' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:18:6:
+[37m      18 │       [32m<igx-card-content>[37m
+         ╵       [32m~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8001: 'igx-icon' is not a known element:
+1. If 'igx-icon' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-icon' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:19:8:
+[37m      19 │         [32m<igx-icon>[37merror</igx-icon>
+         ╵         [32m~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8001: 'igx-card' is not a known element:
+1. If 'igx-card' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-card' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:24:4:
+[37m      24 │     [32m<igx-card class="surface-card hero-card">[37m
+         ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8001: 'igx-card-content' is not a known element:
+1. If 'igx-card-content' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-card-content' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:25:6:
+[37m      25 │       [32m<igx-card-content>[37m
+         ╵       [32m~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8001: 'igx-circular-bar' is not a known element:
+1. If 'igx-circular-bar' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-circular-bar' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:43:18:
+[37m      43 │ ...          [32m<igx-circular-bar [indeterminate]="true" [textVisibil[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8002: Can't bind to 'indeterminate' since it isn't a known property of 'igx-circular-bar'.
+1. If 'igx-circular-bar' is an Angular component and it has 'indeterminate' input, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-circular-bar' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
+3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:43:36:
+[37m      43 │ ...   <igx-circular-bar [32m[indeterminate]="true"[37m [textVisibility]="f...
+         ╵                         [32m~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8002: Can't bind to 'textVisibility' since it isn't a known property of 'igx-circular-bar'.
+1. If 'igx-circular-bar' is an Angular component and it has 'textVisibility' input, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-circular-bar' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
+3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:43:59:
+[37m      43 │ ...indeterminate]="true" [32m[textVisibility]="false"[37m></igx-circular-bar>
+         ╵                          [32m~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8001: 'igx-icon' is not a known element:
+1. If 'igx-icon' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-icon' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:45:18:
+[37m      45 │                   [32m<igx-icon>[37mcheck_circle</igx-icon>
+         ╵                   [32m~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8001: 'igx-icon' is not a known element:
+1. If 'igx-icon' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-icon' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:47:18:
+[37m      47 │                   [32m<igx-icon>[37merror</igx-icon>
+         ╵                   [32m~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8001: 'igx-card' is not a known element:
+1. If 'igx-card' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-card' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:58:6:
+[37m      58 │       [32m<igx-card class="surface-card product-profile">[37m
+         ╵       [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8001: 'igx-card-content' is not a known element:
+1. If 'igx-card-content' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-card-content' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:59:8:
+[37m      59 │         [32m<igx-card-content>[37m
+         ╵         [32m~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8001: 'igx-card' is not a known element:
+1. If 'igx-card' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-card' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:87:4:
+[37m      87 │     [32m<igx-card class="surface-card chart-section">[37m
+         ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8001: 'igx-card-content' is not a known element:
+1. If 'igx-card-content' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-card-content' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:88:6:
+[37m      88 │       [32m<igx-card-content>[37m
+         ╵       [32m~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8001: 'igx-card' is not a known element:
+1. If 'igx-card' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-card' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:138:4:
+[37m      138 │     [32m<igx-card class="surface-card table-section">[37m
+          ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8001: 'igx-card-content' is not a known element:
+1. If 'igx-card-content' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-card-content' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:139:6:
+[37m      139 │       [32m<igx-card-content>[37m
+          ╵       [32m~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8001: 'igx-circular-bar' is not a known element:
+1. If 'igx-circular-bar' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-circular-bar' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:159:16:
+[37m      159 │ ...          [32m<igx-circular-bar [indeterminate]="true" [textVisibi[37m...
+          ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8002: Can't bind to 'indeterminate' since it isn't a known property of 'igx-circular-bar'.
+1. If 'igx-circular-bar' is an Angular component and it has 'indeterminate' input, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-circular-bar' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
+3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:159:34:
+[37m      159 │ ...  <igx-circular-bar [32m[indeterminate]="true"[37m [textVisibility]="f...
+          ╵                        [32m~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8002: Can't bind to 'textVisibility' since it isn't a known property of 'igx-circular-bar'.
+1. If 'igx-circular-bar' is an Angular component and it has 'textVisibility' input, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-circular-bar' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
+3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:159:57:
+[37m      159 │ ...ndeterminate]="true" [32m[textVisibility]="false"[37m></igx-circular-bar>
+          ╵                         [32m~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8001: 'igx-grid' is not a known element:
+1. If 'igx-grid' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-grid' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:166:8:
+[37m      166 │         [32m<igx-grid[37m
+          ╵         [32m~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8002: Can't bind to 'data' since it isn't a known property of 'igx-grid'.
+1. If 'igx-grid' is an Angular component and it has 'data' input, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-grid' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
+3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:168:10:
+[37m      168 │           [32m[data]="forecastRows()"[37m
+          ╵           [32m~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8002: Can't bind to 'autoGenerate' since it isn't a known property of 'igx-grid'.
+1. If 'igx-grid' is an Angular component and it has 'autoGenerate' input, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-grid' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
+3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:169:10:
+[37m      169 │           [32m[autoGenerate]="false"[37m
+          ╵           [32m~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8002: Can't bind to 'cellSelection' since it isn't a known property of 'igx-grid'.
+1. If 'igx-grid' is an Angular component and it has 'cellSelection' input, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-grid' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
+3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:170:10:
+[37m      170 │           [32m[cellSelection]="'none'"[37m
+          ╵           [32m~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8002: Can't bind to 'hideRowSelectors' since it isn't a known property of 'igx-grid'.
+1. If 'igx-grid' is an Angular component and it has 'hideRowSelectors' input, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-grid' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
+3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:171:10:
+[37m      171 │           [32m[hideRowSelectors]="true"[37m
+          ╵           [32m~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8002: Can't bind to 'rowSelection' since it isn't a known property of 'igx-grid'.
+1. If 'igx-grid' is an Angular component and it has 'rowSelection' input, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-grid' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
+3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:172:10:
+[37m      172 │           [32m[rowSelection]="'none'"[37m
+          ╵           [32m~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8002: Can't bind to 'selectRowOnClick' since it isn't a known property of 'igx-grid'.
+1. If 'igx-grid' is an Angular component and it has 'selectRowOnClick' input, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-grid' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
+3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:173:10:
+[37m      173 │           [32m[selectRowOnClick]="false"[37m
+          ╵           [32m~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2345: Argument of type 'Event' is not assignable to parameter of type 'ForecastRow'.
+  Type 'Event' is missing the following properties from type 'ForecastRow': dbId, product, itemCode[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:176:41:
+[37m      176 │           (rowClick)="onForecastRowClick([32m$event[37m)"
+          ╵                                          [32m~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8001: 'igx-column' is not a known element:
+1. If 'igx-column' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-column' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:178:10:
+[37m      178 │           [32m<igx-column field="product" header="Product" [pinned]="[37m...
+          ╵           [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8002: Can't bind to 'pinned' since it isn't a known property of 'igx-column'.
+1. If 'igx-column' is an Angular component and it has 'pinned' input, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-column' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
+3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:178:55:
+[37m      178 │ ...oduct" header="Product" [32m[pinned]="true"[37m [resizable]="true" wid...
+          ╵                            [32m~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8002: Can't bind to 'resizable' since it isn't a known property of 'igx-column'.
+1. If 'igx-column' is an Angular component and it has 'resizable' input, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-column' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
+3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:178:71:
+[37m      178 │ ...eader="Product" [pinned]="true" [32m[resizable]="true"[37m width="360px">
+          ╵                                    [32m~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8001: 'igx-column' is not a known element:
+1. If 'igx-column' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-column' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:190:12:
+[37m      190 │             [32m<igx-column[37m
+          ╵             [32m~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8002: Can't bind to 'field' since it isn't a known property of 'igx-column'.
+1. If 'igx-column' is an Angular component and it has 'field' input, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-column' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
+3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:191:14:
+[37m      191 │               [32m[field]="month"[37m
+          ╵               [32m~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8002: Can't bind to 'header' since it isn't a known property of 'igx-column'.
+1. If 'igx-column' is an Angular component and it has 'header' input, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-column' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
+3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:192:14:
+[37m      192 │               [32m[header]="month"[37m
+          ╵               [32m~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8002: Can't bind to 'resizable' since it isn't a known property of 'igx-column'.
+1. If 'igx-column' is an Angular component and it has 'resizable' input, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-column' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
+3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:194:14:
+[37m      194 │               [32m[resizable]="true"[37m
+          ╵               [32m~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8001: 'igx-dialog' is not a known element:
+1. If 'igx-dialog' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-dialog' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:204:0:
+[37m      204 │ [32m<igx-dialog[37m
+          ╵ [32m~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8002: Can't bind to 'isOpen' since it isn't a known property of 'igx-dialog'.
+1. If 'igx-dialog' is an Angular component and it has 'isOpen' input, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-dialog' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
+3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:206:2:
+[37m      206 │   [32m[isOpen]="isAiModalOpen()"[37m
+          ╵   [32m~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8002: Can't bind to 'closeOnEscape' since it isn't a known property of 'igx-dialog'.
+1. If 'igx-dialog' is an Angular component and it has 'closeOnEscape' input, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-dialog' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
+3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:207:2:
+[37m      207 │   [32m[closeOnEscape]="!isAiSubmitting()"[37m
+          ╵   [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8002: Can't bind to 'closeOnOutsideSelect' since it isn't a known property of 'igx-dialog'.
+1. If 'igx-dialog' is an Angular component and it has 'closeOnOutsideSelect' input, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-dialog' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
+3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:208:2:
+[37m      208 │   [32m[closeOnOutsideSelect]="!isAiSubmitting()"[37m
+          ╵   [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8001: 'igx-dialog-title' is not a known element:
+1. If 'igx-dialog-title' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-dialog-title' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:211:2:
+[37m      211 │   [32m<igx-dialog-title>[37m
+          ╵   [32m~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8001: 'igx-icon' is not a known element:
+1. If 'igx-icon' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-icon' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:217:6:
+[37m      217 │       [32m<igx-icon>[37mclose</igx-icon>
+          ╵       [32m~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8001: 'igx-input-group' is not a known element:
+1. If 'igx-input-group' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-input-group' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:226:4:
+[37m      226 │     [32m<igx-input-group type="box">[37m
+          ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8001: 'igx-input-group' is not a known element:
+1. If 'igx-input-group' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-input-group' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:239:4:
+[37m      239 │     [32m<igx-input-group type="box">[37m
+          ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8001: 'igx-circular-bar' is not a known element:
+1. If 'igx-circular-bar' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-circular-bar' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:256:10:
+[37m      256 │           [32m<igx-circular-bar [indeterminate]="true" [textVisibilit[37m...
+          ╵           [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8002: Can't bind to 'indeterminate' since it isn't a known property of 'igx-circular-bar'.
+1. If 'igx-circular-bar' is an Angular component and it has 'indeterminate' input, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-circular-bar' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
+3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:256:28:
+[37m      256 │ ...  <igx-circular-bar [32m[indeterminate]="true"[37m [textVisibility]="f...
+          ╵                        [32m~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8002: Can't bind to 'textVisibility' since it isn't a known property of 'igx-circular-bar'.
+1. If 'igx-circular-bar' is an Angular component and it has 'textVisibility' input, then verify that it is included in the '@Component.imports' of this component.
+2. If 'igx-circular-bar' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
+3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:256:51:
+[37m      256 │ ...ndeterminate]="true" [32m[textVisibility]="false"[37m></igx-circular-bar>
+          ╵                         [32m~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+[39m[22m
+[1m[31m[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2008: Could not find template file './app.html'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+[39m[22m
+[1m[31m[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2008: Could not find template file './app.html'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+[39m[22m
+[1m[31m[31mX [41;31m[[41;97mERROR[41;31m][0m [1mCould not resolve "src/styles.css"[0m
+
+    angular:styles/global:styles:2:8:
+[37m      2 │ @import [32m'src/styles.css'[37m;
+        ╵         [32m~~~~~~~~~~~~~~~~[0m
+
+  You can mark the path "src/styles.css" as external to exclude it from the bundle, which will remove this error and leave the unresolved path in the bundle.
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2008: Could not find template file './app.html'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+[39m[22m
+[1m[31m[31mX [41;31m[[41;97mERROR[41;31m][0m [1mCould not resolve "src/styles.css"[0m
+
+    angular:styles/global:styles:2:8:
+[37m      2 │ @import [32m'src/styles.css'[37m;
+        ╵         [32m~~~~~~~~~~~~~~~~[0m
+
+  You can mark the path "src/styles.css" as external to exclude it from the bundle, which will remove this error and leave the unresolved path in the bundle.
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2008: Could not find template file './app.html'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+[39m[22m
+[1m[31m[31mX [41;31m[[41;97mERROR[41;31m][0m [1mCould not resolve "src/styles.css"[0m
+
+    angular:styles/global:styles:2:8:
+[37m      2 │ @import [32m'src/styles.css'[37m;
+        ╵         [32m~~~~~~~~~~~~~~~~[0m
+
+  You can mark the path "src/styles.css" as external to exclude it from the bundle, which will remove this error and leave the unresolved path in the bundle.
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2008: Could not find template file './app.html'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+[39m[22m
+[1m[31m[31mX [41;31m[[41;97mERROR[41;31m][0m [1mCould not resolve "src/styles.css"[0m
+
+    angular:styles/global:styles:2:8:
+[37m      2 │ @import [32m'src/styles.css'[37m;
+        ╵         [32m~~~~~~~~~~~~~~~~[0m
+
+  You can mark the path "src/styles.css" as external to exclude it from the bundle, which will remove this error and leave the unresolved path in the bundle.
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2008: Could not find template file './app.html'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+[39m[22m
+[1m[31m[31mX [41;31m[[41;97mERROR[41;31m][0m [1mCould not resolve "src/styles.css"[0m
+
+    angular:styles/global:styles:2:8:
+[37m      2 │ @import [32m'src/styles.css'[37m;
+        ╵         [32m~~~~~~~~~~~~~~~~[0m
+
+  You can mark the path "src/styles.css" as external to exclude it from the bundle, which will remove this error and leave the unresolved path in the bundle.
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2008: Could not find template file './app.html'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+[39m[22m
+[1m[31m[31mX [41;31m[[41;97mERROR[41;31m][0m [1mCould not resolve "src/styles.css"[0m
+
+    angular:styles/global:styles:2:8:
+[37m      2 │ @import [32m'src/styles.css'[37m;
+        ╵         [32m~~~~~~~~~~~~~~~~[0m
+
+  You can mark the path "src/styles.css" as external to exclude it from the bundle, which will remove this error and leave the unresolved path in the bundle.
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2008: Could not find template file './app.html'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.ts:52:15:
+[37m      52 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+[39m[22m
