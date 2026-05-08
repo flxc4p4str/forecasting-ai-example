@@ -12,6 +12,14 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Chart, Plugin, registerables } from 'chart.js';
+import { IgxCardModule } from 'igniteui-angular/card';
+import { IgxDialogModule } from 'igniteui-angular/dialog';
+import { IgxButtonModule } from 'igniteui-angular/directives';
+import { IgxGridModule } from 'igniteui-angular/grids/grid';
+import { IgxIconModule } from 'igniteui-angular/icon';
+import { IgxInputGroupModule } from 'igniteui-angular/input-group';
+import { IgxNavbarModule } from 'igniteui-angular/navbar';
+import { IgxProgressBarModule } from 'igniteui-angular/progressbar';
 import { Subscription, switchMap, timer } from 'rxjs';
 
 import {
@@ -33,9 +41,27 @@ interface MarkerHitbox {
   findings: ForecastFinding[];
 }
 
+interface ForecastRow {
+  dbId: number;
+  product: string;
+  itemCode: string;
+  [month: string]: number | string;
+}
+
 @Component({
   selector: 'app-root',
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    IgxButtonModule,
+    IgxCardModule,
+    IgxDialogModule,
+    IgxGridModule,
+    IgxIconModule,
+    IgxInputGroupModule,
+    IgxNavbarModule,
+    IgxProgressBarModule,
+  ],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
@@ -78,6 +104,26 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
 
   private chart?: Chart<'line', number[], string>;
   private aiPoll?: Subscription;
+
+  get forecastRows(): ForecastRow[] {
+    if (!this.workspace) {
+      return [];
+    }
+
+    return this.workspace.products.map((product) => {
+      const row: ForecastRow = {
+        dbId: product.dbId,
+        product: product.label,
+        itemCode: product.itemCode,
+      };
+
+      for (const month of this.workspace?.months ?? []) {
+        row[month] = this.forecastValue(product.dbId, month);
+      }
+
+      return row;
+    });
+  }
 
   ngOnInit(): void {
     this.api.getForecast().subscribe({
@@ -233,6 +279,17 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
 
   forecastValue(productId: number, month: string): number | string {
     return this.workspace?.values_by_product[String(productId)]?.[month] ?? '';
+  }
+
+  productForRow(row: ForecastRow): ForecastProduct | undefined {
+    return this.workspace?.products.find((product) => product.dbId === row.dbId);
+  }
+
+  selectProductByRow(row: ForecastRow): void {
+    const product = this.productForRow(row);
+    if (product) {
+      this.selectProduct(product);
+    }
   }
 
   private applyWorkspace(workspace: ForecastWorkspace): void {

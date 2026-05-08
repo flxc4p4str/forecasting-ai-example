@@ -1,213 +1,259 @@
-<header class="topbar">
-  <a class="brand" href="/">Forecasting AI</a>
-  <nav aria-label="Primary navigation">
-    <a href="/forecasts/template.csv">CSV template</a>
-    <a href="/docs">Docs</a>
-  </nav>
-</header>
+<igx-navbar class="topbar" title="Forecasting AI" [isActionButtonVisible]="false">
+  <div class="nav-actions">
+    <a igxButton="flat" href="/forecasts/template.csv">CSV template</a>
+    <a igxButton="flat" href="/docs">Docs</a>
+  </div>
+</igx-navbar>
 
 <main class="page">
   @if (isLoading) {
-    <section class="state-block">
-      <div class="spinner" aria-hidden="true"></div>
-      <p>Loading forecast workspace...</p>
-    </section>
+    <igx-card class="surface-card state-block">
+      <igx-card-content>
+        <igx-circular-bar [indeterminate]="true" [textVisibility]="false"></igx-circular-bar>
+        <p>Loading forecast workspace...</p>
+      </igx-card-content>
+    </igx-card>
   } @else if (loadError) {
-    <section class="state-block error-state">
-      <p>{{ loadError }}</p>
-    </section>
+    <igx-card class="surface-card state-block error-state">
+      <igx-card-content>
+        <igx-icon>error</igx-icon>
+        <p>{{ loadError }}</p>
+      </igx-card-content>
+    </igx-card>
   } @else if (workspace; as data) {
-    <section class="hero-band">
-      <div>
-        <p class="eyebrow">ERP demand forecast</p>
-        <h1>Rolling 12-month unit forecast</h1>
-        <p class="lead">
-          Demo product, shipment, and forecast history is already loaded. Uploading a CSV only updates forecast units for existing item codes.
-        </p>
-        @if (data.forecast.error_message || uploadError) {
-          <p class="error">{{ uploadError || data.forecast.error_message }}</p>
-        }
-      </div>
+    <igx-card class="surface-card hero-card">
+      <igx-card-content>
+        <div>
+          <p class="eyebrow">ERP demand forecast</p>
+          <h1>Rolling 12-month unit forecast</h1>
+          <p class="lead">
+            Demo product, shipment, and forecast history is already loaded. Uploading a CSV only updates forecast units for existing item codes.
+          </p>
+          @if (data.forecast.error_message || uploadError) {
+            <p class="error">{{ uploadError || data.forecast.error_message }}</p>
+          }
+        </div>
 
-      <div class="ai-action">
-        <button class="secondary" type="button" (click)="openAiModal()">AI-Assisted Forecasting</button>
-        @if (aiStatusText) {
-          <div class="ai-status-line" aria-live="polite">
-            <span class="ai-status-content" [class.failed]="aiStatusClass === 'failed'" [class.completed]="aiStatusClass === 'completed'">
-              @if (aiStatusClass === 'queued' || aiStatusClass === 'running') {
-                <span class="spinner small" aria-hidden="true"></span>
-              } @else {
-                <span class="status-dot" [class.failed]="aiStatusClass === 'failed'" [class.completed]="aiStatusClass === 'completed'"></span>
-              }
-              <span>{{ aiStatusText }}</span>
-            </span>
-          </div>
-        }
-      </div>
-    </section>
+        <div class="ai-action">
+          <button igxButton="contained" type="button" (click)="openAiModal()">AI-Assisted Forecasting</button>
+          @if (aiStatusText) {
+            <div class="ai-status-line" aria-live="polite">
+              <span class="ai-status-content" [class.failed]="aiStatusClass === 'failed'" [class.completed]="aiStatusClass === 'completed'">
+                @if (aiStatusClass === 'queued' || aiStatusClass === 'running') {
+                  <igx-circular-bar [indeterminate]="true" [textVisibility]="false"></igx-circular-bar>
+                } @else if (aiStatusClass === 'completed') {
+                  <igx-icon>check_circle</igx-icon>
+                } @else {
+                  <igx-icon>error</igx-icon>
+                }
+                <span>{{ aiStatusText }}</span>
+              </span>
+            </div>
+          }
+        </div>
+      </igx-card-content>
+    </igx-card>
 
     @if (selectedProduct; as product) {
-      <section class="product-profile">
-        <div>
-          <p class="eyebrow">Selected product</p>
-          <h2>{{ product.label }}</h2>
-          <p class="lead">{{ product.profile.description }}</p>
-        </div>
-        <dl class="profile-grid">
+      <igx-card class="surface-card product-profile">
+        <igx-card-content>
           <div>
-            <dt>Brand</dt>
-            <dd>{{ product.profile.brand }}</dd>
+            <p class="eyebrow">Selected product</p>
+            <h2>{{ product.label }}</h2>
+            <p class="lead">{{ product.profile.description }}</p>
           </div>
-          <div>
-            <dt>Type</dt>
-            <dd>{{ product.profile.type }}</dd>
-          </div>
-          <div>
-            <dt>Retail price</dt>
-            <dd>{{ product.profile.retailPrice }}</dd>
-          </div>
-          <div>
-            <dt>Item code</dt>
-            <dd>{{ product.profile.itemCode }}</dd>
-          </div>
-        </dl>
-      </section>
+          <dl class="profile-grid">
+            <div>
+              <dt>Brand</dt>
+              <dd>{{ product.profile.brand }}</dd>
+            </div>
+            <div>
+              <dt>Type</dt>
+              <dd>{{ product.profile.type }}</dd>
+            </div>
+            <div>
+              <dt>Retail price</dt>
+              <dd>{{ product.profile.retailPrice }}</dd>
+            </div>
+            <div>
+              <dt>Item code</dt>
+              <dd>{{ product.profile.itemCode }}</dd>
+            </div>
+          </dl>
+        </igx-card-content>
+      </igx-card>
     }
 
-    <section class="chart-section">
-      <div class="title-row">
-        <div>
-          <p class="eyebrow">Rolling YoY view</p>
-          <h2>Forecast vs last year</h2>
-        </div>
-        <p class="muted chart-note">Click month markers to open AI suggestions.</p>
-      </div>
-      <div class="chart-shell">
-        <canvas #forecastCanvas height="320" (click)="handleCanvasClick($event)"></canvas>
-        @if (tooltipOpen) {
-          <div
-            #findingTooltip
-            class="finding-tooltip"
-            [style.left.px]="tooltipLeft"
-            [style.top.px]="tooltipTop"
-          >
-            <div class="tooltip-heading">{{ tooltipMonth }}</div>
-            @if (tooltipConsiderations.length) {
-              <section>
-                <h4>Considerations</h4>
-                <ul>
-                  @for (finding of tooltipConsiderations; track finding.description) {
-                    <li>
-                      <strong>{{ impactEmoji(finding.impact) }} {{ signedImpact(finding.impact) }}</strong>
-                      <p>{{ finding.description }}</p>
-                    </li>
-                  }
-                </ul>
-              </section>
-            }
-            @if (tooltipRecommendations.length) {
-              <section>
-                <h4>Recommendations</h4>
-                <ul>
-                  @for (finding of tooltipRecommendations; track finding.description) {
-                    <li>
-                      <strong>{{ impactEmoji(finding.impact) }} {{ signedImpact(finding.impact) }}</strong>
-                      <p>{{ finding.description }}</p>
-                    </li>
-                  }
-                </ul>
-              </section>
-            }
+    <igx-card class="surface-card chart-section">
+      <igx-card-content>
+        <div class="title-row">
+          <div>
+            <p class="eyebrow">Rolling YoY view</p>
+            <h2>Forecast vs last year</h2>
           </div>
-        }
-      </div>
-    </section>
-
-    <section class="table-section">
-      <div class="title-row table-heading">
-        <h2>Forecast units</h2>
-        <form class="inline-upload" (ngSubmit)="uploadForecast()">
-          <input
-            #forecastFileInput
-            type="file"
-            name="forecast_file"
-            accept=".csv,text/csv"
-            (change)="onFileSelected($event)"
-          />
-          <button type="submit" [disabled]="!selectedUploadFile || isUploading">
-            {{ isUploading ? 'Uploading...' : 'Update forecast CSV' }}
-          </button>
-        </form>
-      </div>
-
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Product</th>
-              @for (month of data.months; track month) {
-                <th>{{ month }}</th>
+          <p class="muted chart-note">Click month markers to open AI suggestions.</p>
+        </div>
+        <div class="chart-shell">
+          <canvas #forecastCanvas height="320" (click)="handleCanvasClick($event)"></canvas>
+          @if (tooltipOpen) {
+            <div
+              #findingTooltip
+              class="finding-tooltip"
+              [style.left.px]="tooltipLeft"
+              [style.top.px]="tooltipTop"
+            >
+              <div class="tooltip-heading">{{ tooltipMonth }}</div>
+              @if (tooltipConsiderations.length) {
+                <section>
+                  <h4>Considerations</h4>
+                  <ul>
+                    @for (finding of tooltipConsiderations; track finding.description) {
+                      <li>
+                        <strong>{{ impactEmoji(finding.impact) }} {{ signedImpact(finding.impact) }}</strong>
+                        <p>{{ finding.description }}</p>
+                      </li>
+                    }
+                  </ul>
+                </section>
               }
-            </tr>
-          </thead>
-          <tbody>
-            @for (rowProduct of data.products; track rowProduct.dbId) {
-              <tr class="product-row" [class.selected]="selectedProduct?.dbId === rowProduct.dbId">
-                <td>
-                  <button class="link-button" type="button" (click)="selectProduct(rowProduct)">
-                    {{ rowProduct.label }}
-                  </button>
-                  <span class="muted block">{{ rowProduct.itemCode }}</span>
-                </td>
-                @for (month of data.months; track month) {
-                  <td>{{ forecastValue(rowProduct.dbId, month) }}</td>
-                }
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-    </section>
+              @if (tooltipRecommendations.length) {
+                <section>
+                  <h4>Recommendations</h4>
+                  <ul>
+                    @for (finding of tooltipRecommendations; track finding.description) {
+                      <li>
+                        <strong>{{ impactEmoji(finding.impact) }} {{ signedImpact(finding.impact) }}</strong>
+                        <p>{{ finding.description }}</p>
+                      </li>
+                    }
+                  </ul>
+                </section>
+              }
+            </div>
+          }
+        </div>
+      </igx-card-content>
+    </igx-card>
+
+    <igx-card class="surface-card table-section">
+      <igx-card-content>
+        <div class="title-row table-heading">
+          <h2>Forecast units</h2>
+          <form class="inline-upload" (ngSubmit)="uploadForecast()">
+            <igx-input-group type="box" class="file-field">
+              <label igxLabel for="forecastFile">Forecast CSV</label>
+              <input
+                igxInput
+                #forecastFileInput
+                id="forecastFile"
+                type="file"
+                name="forecast_file"
+                accept=".csv,text/csv"
+                (change)="onFileSelected($event)"
+              />
+            </igx-input-group>
+            <button igxButton="contained" type="submit" [disabled]="!selectedUploadFile || isUploading">
+              @if (isUploading) {
+                <igx-circular-bar [indeterminate]="true" [textVisibility]="false"></igx-circular-bar>
+              }
+              <span>{{ isUploading ? 'Uploading...' : 'Update forecast CSV' }}</span>
+            </button>
+          </form>
+        </div>
+
+        <igx-grid
+          class="forecast-grid"
+          [data]="forecastRows"
+          [autoGenerate]="false"
+          [allowFiltering]="true"
+          [rowSelection]="'single'"
+          primaryKey="dbId"
+          height="470px"
+        >
+          <igx-column field="product" header="Product" [pinned]="true" [sortable]="true" [resizable]="true" width="340px">
+            <ng-template igxCell let-cell="cell">
+              <button
+                igxButton="flat"
+                class="grid-product-button"
+                type="button"
+                [class.selected-product-button]="selectedProduct?.dbId === $any(cell).row.data.dbId"
+                (click)="selectProductByRow($any(cell).row.data)"
+              >
+                <span>{{ $any(cell).row.data.product }}</span>
+                <small>{{ $any(cell).row.data.itemCode }}</small>
+              </button>
+            </ng-template>
+          </igx-column>
+          @for (month of data.months; track month) {
+            <igx-column
+              [field]="month"
+              [header]="month"
+              dataType="number"
+              [sortable]="true"
+              [resizable]="true"
+              width="120px"
+            ></igx-column>
+          }
+        </igx-grid>
+      </igx-card-content>
+    </igx-card>
   }
 </main>
 
-@if (isAiModalOpen) {
-  <div class="modal-backdrop" role="presentation" (click)="closeAiModal()">
-    <form class="modal-panel" (submit)="$event.preventDefault(); startAiAnalysis()" (click)="$event.stopPropagation()">
-      <div class="title-row">
-        <div>
-          <p class="eyebrow">AI-Assisted Forecasting</p>
-          <h2>Add context for the analysis</h2>
-        </div>
-        <button class="icon-button" type="button" aria-label="Close" (click)="closeAiModal()">x</button>
-      </div>
-      <p class="muted">
-        Describe what the forecast already accounts for before the model looks for outside factors affecting unit demand.
-      </p>
-      <label>
-        Forecast context
-        <textarea
-          name="forecast_context"
-          rows="5"
-          [(ngModel)]="forecastContext"
-          placeholder="Seasonality, promotions, order history, channel expectations, inventory constraints, or other assumptions already reflected in the numbers."
-        ></textarea>
-      </label>
-      <label>
-        Blind spots
-        <textarea
-          name="blind_spots"
-          rows="4"
-          [(ngModel)]="blindSpots"
-          placeholder="Ask the AI to investigate specific regions, product traits, events, risks, or opportunities."
-        ></textarea>
-      </label>
-      <div class="modal-actions">
-        <button type="button" class="plain" (click)="closeAiModal()">Cancel</button>
-        <button type="submit" [disabled]="isAiSubmitting">
-          {{ isAiSubmitting ? 'Starting...' : 'Start analysis' }}
-        </button>
-      </div>
-    </form>
-  </div>
-}
+<igx-dialog
+  class="ai-dialog"
+  [isOpen]="isAiModalOpen"
+  [closeOnEscape]="!isAiSubmitting"
+  [closeOnOutsideSelect]="!isAiSubmitting"
+  (closed)="isAiModalOpen = false"
+>
+  <igx-dialog-title>
+    <div>
+      <p class="eyebrow">AI-Assisted Forecasting</p>
+      <h2>Add context for the analysis</h2>
+    </div>
+    <button igxIconButton="flat" type="button" aria-label="Close" (click)="closeAiModal()">
+      <igx-icon>close</igx-icon>
+    </button>
+  </igx-dialog-title>
+
+  <form class="ai-form" (submit)="$event.preventDefault(); startAiAnalysis()">
+    <p class="muted">
+      Describe what the forecast already accounts for before the model looks for outside factors affecting unit demand.
+    </p>
+
+    <igx-input-group type="box">
+      <label igxLabel for="forecastContext">Forecast context</label>
+      <textarea
+        igxInput
+        id="forecastContext"
+        name="forecast_context"
+        rows="5"
+        [(ngModel)]="forecastContext"
+        placeholder="Seasonality, promotions, order history, channel expectations, inventory constraints, or other assumptions already reflected in the numbers."
+      ></textarea>
+    </igx-input-group>
+
+    <igx-input-group type="box">
+      <label igxLabel for="blindSpots">Blind spots</label>
+      <textarea
+        igxInput
+        id="blindSpots"
+        name="blind_spots"
+        rows="4"
+        [(ngModel)]="blindSpots"
+        placeholder="Ask the AI to investigate specific regions, product traits, events, risks, or opportunities."
+      ></textarea>
+    </igx-input-group>
+
+    <div igxDialogActions class="modal-actions">
+      <button igxButton="outlined" type="button" (click)="closeAiModal()">Cancel</button>
+      <button igxButton="contained" type="submit" [disabled]="isAiSubmitting">
+        @if (isAiSubmitting) {
+          <igx-circular-bar [indeterminate]="true" [textVisibility]="false"></igx-circular-bar>
+        }
+        <span>{{ isAiSubmitting ? 'Starting...' : 'Start analysis' }}</span>
+      </button>
+    </div>
+  </form>
+</igx-dialog>
