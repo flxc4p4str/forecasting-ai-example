@@ -50,7 +50,7 @@
               }
             ],
             "styles": [
-              "node_modules/igniteui-angular/styles/igniteui-fluent-light.css",
+              "node_modules/@infragistics/igniteui-angular/styles/igniteui-fluent-light.css",
               "src/styles.css"
             ]
           },

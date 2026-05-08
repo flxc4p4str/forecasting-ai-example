@@ -12,14 +12,14 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Chart, Plugin, registerables } from 'chart.js';
-import { IgxCardModule } from 'igniteui-angular/card';
-import { IgxDialogModule } from 'igniteui-angular/dialog';
-import { IgxButtonModule } from 'igniteui-angular/directives';
-import { IgxGridModule } from 'igniteui-angular/grids/grid';
-import { IgxIconModule } from 'igniteui-angular/icon';
-import { IgxInputGroupModule } from 'igniteui-angular/input-group';
-import { IgxNavbarModule } from 'igniteui-angular/navbar';
-import { IgxProgressBarModule } from 'igniteui-angular/progressbar';
+import { IgxCardModule } from '@infragistics/igniteui-angular/card';
+import { IgxDialogModule } from '@infragistics/igniteui-angular/dialog';
+import { IgxButtonModule } from '@infragistics/igniteui-angular/directives';
+import { IgxGridModule } from '@infragistics/igniteui-angular/grids/grid';
+import { IgxIconModule } from '@infragistics/igniteui-angular/icon';
+import { IgxInputGroupModule } from '@infragistics/igniteui-angular/input-group';
+import { IgxNavbarModule } from '@infragistics/igniteui-angular/navbar';
+import { IgxProgressBarModule } from '@infragistics/igniteui-angular/progressbar';
 import { Subscription, switchMap, timer } from 'rxjs';
 
 import {

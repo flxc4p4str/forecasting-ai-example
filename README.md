@@ -10,6 +10,15 @@ Install the Express API dependencies from the repository root:
 npm install
 ```
 
+Configure the Infragistics private npm feed before installing the Angular dependencies. The checked-in `frontend/.npmrc` maps the `@infragistics` scope to the licensed feed. Add your licensed feed credentials to your user-level npm config, or copy `frontend/.npmrc.example` to a local untracked config and fill in your token.
+
+```bash
+npm config set @infragistics:registry https://packages.infragistics.com/npm/js-licensed/
+npm config set //packages.infragistics.com/npm/js-licensed/:username YOUR_INFRAGISTICS_USERNAME
+npm config set //packages.infragistics.com/npm/js-licensed/:email YOUR_INFRAGISTICS_EMAIL
+npm config set //packages.infragistics.com/npm/js-licensed/:_auth YOUR_INFRAGISTICS_ACCESS_TOKEN
+```
+
 Install the Angular dependencies:
 
 ```bash
