@@ -1,0 +1,25 @@
+{
+  "name": "forecasting-ai-example",
+  "version": "1.0.0",
+  "description": "A proof-of-concept Angular and Express app for AI-assisted unit forecasting.",
+  "main": "backend/server.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "start": "node backend/server.js",
+    "api": "node backend/server.js",
+    "frontend": "npm --prefix frontend start",
+    "build:frontend": "npm --prefix frontend run build",
+    "test": "node --check backend/server.js && npm --prefix frontend run build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "csv-parse": "^6.2.1",
+    "express": "^5.2.1",
+    "multer": "^2.1.1"
+  }
+}

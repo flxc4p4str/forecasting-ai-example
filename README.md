@@ -1,28 +1,46 @@
 # Forecasting AI Example
 
-A proof-of-concept FastAPI app for AI-assisted unit forecasting. The app starts with seeded ERP-style demo data: product master data, last year's actual shipments, last year's forecast, and this year's rolling 12-month forecast.
+A proof-of-concept Angular and Express app for AI-assisted unit forecasting. The app starts with seeded ERP-style demo data: product master data, last year's actual shipments, last year's forecast, and this year's rolling 12-month forecast.
 
 ## Run Locally
 
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -e ".[dev]"
-uvicorn app.main:app --reload
-```
-
-Then open http://127.0.0.1:8000.
-
-For live OpenAI analysis, set:
+Install the Express API dependencies from the repository root:
 
 ```bash
-cp .env.example .env
-# edit .env and set OPENAI_API_KEY
+npm install
 ```
 
-Without an API key, AI jobs complete with deterministic demo findings so the POC remains runnable offline.
+Install the Angular dependencies:
 
-The CSV upload is optional. It updates forecast units for existing item codes; product data is fixed demo ERP data.
+```bash
+cd frontend
+npm install
+```
+
+In one terminal, run the Express API:
+
+```bash
+npm start
+```
+
+In another terminal, run the Angular dev server:
+
+```bash
+cd frontend
+npm start
+```
+
+Then open http://localhost:4200. The Angular dev server proxies `/api`, `/docs`, and `/forecasts` to Express on http://127.0.0.1:3000.
+
+The CSV upload is optional. It updates forecast units for existing item codes; product data is fixed demo ERP data. AI jobs complete with deterministic demo findings so the POC remains runnable offline.
+
+## Python Helpers
+
+The original Python forecast parsing and AI helper modules are still present for reference and tests, but the web API now runs on Node/Express.
+
+```bash
+python -m pytest
+```
 
 ## Docs
 
