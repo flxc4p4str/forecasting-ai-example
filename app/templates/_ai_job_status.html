@@ -1,0 +1,24 @@
+<span
+  {% if job.status in ["queued", "running"] %}
+    hx-get="/ai-jobs/{{ job.id }}"
+    hx-trigger="every 2s"
+    hx-swap="outerHTML"
+  {% endif %}
+  class="ai-status-content {{ job.status }}"
+>
+  {% if job.status == "failed" %}
+    <span class="status-dot failed"></span>
+    <span>{{ job.error_message }}</span>
+  {% elif job.status in ["queued", "running"] %}
+    <span class="spinner" aria-hidden="true"></span>
+    <span>Analyzing forecast...</span>
+  {% elif job.status == "completed" %}
+    <span class="status-dot completed"></span>
+    <span>AI suggestions added to chart markers.</span>
+    <script>
+      if (window.mergeForecastFindings) {
+        window.mergeForecastFindings({{ chart_finding_payload | tojson }});
+      }
+    </script>
+  {% endif %}
+</span>

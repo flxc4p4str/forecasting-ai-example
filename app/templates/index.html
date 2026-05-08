@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Forecast{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div>
+    <p class="eyebrow">Sales forecasting POC</p>
+    <h1>Upload a forecast CSV</h1>
+    <p class="lead">Start with a pivot table: products as rows, months as columns, and optional product metadata to give the AI more context.</p>
+  </div>
+
+  <form class="upload-form" action="/forecasts" method="post" enctype="multipart/form-data">
+    <input type="file" name="forecast_file" accept=".csv,text/csv" required>
+    <button type="submit">Upload forecast</button>
+  </form>
+</section>
+
+<section class="section">
+  <h2>Recent forecasts</h2>
+  {% if forecasts %}
+    <div class="list">
+      {% for forecast in forecasts %}
+        <a class="list-row" href="/forecasts/{{ forecast.id }}">
+          <span>{{ forecast.original_filename }}</span>
+          <span class="muted">{{ forecast.status }}</span>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="muted">No forecasts uploaded yet.</p>
+  {% endif %}
+</section>
+{% endblock %}

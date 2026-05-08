@@ -1,0 +1,12 @@
+.venv/
+.env
+__pycache__/
+*.py[cod]
+.pytest_cache/
+forecasting.db
+*.sqlite
+*.sqlite3
+.DS_Store
+*.egg-info/
+
+forecast-template.csv

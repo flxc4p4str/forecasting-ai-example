@@ -1,0 +1,45 @@
+{% if findings_by_product %}
+  {% for product_label, findings in findings_by_product.items() %}
+    <section class="finding-group">
+      <h3>{{ product_label }}</h3>
+      <div class="finding-columns">
+        <section>
+          <h4>Considerations</h4>
+          <div class="findings">
+            {% for finding in findings | selectattr("finding_type", "equalto", "consideration") %}
+              <article class="finding {{ finding.finding_type }}">
+                <div>
+                  <span class="pill">{{ finding.finding_type }}</span>
+                  <span class="muted">{{ finding.month_year }}</span>
+                </div>
+                <p>{{ finding.description }}</p>
+                <strong>{{ impact_emoji(finding.impact) }} Impact {{ finding.impact }}</strong>
+              </article>
+            {% else %}
+              <p class="muted">No considerations returned.</p>
+            {% endfor %}
+          </div>
+        </section>
+        <section>
+          <h4>Recommendations</h4>
+          <div class="findings">
+            {% for finding in findings | selectattr("finding_type", "equalto", "recommendation") %}
+              <article class="finding {{ finding.finding_type }}">
+                <div>
+                  <span class="pill">{{ finding.finding_type }}</span>
+                  <span class="muted">{{ finding.month_year }}</span>
+                </div>
+                <p>{{ finding.description }}</p>
+                <strong>{{ impact_emoji(finding.impact) }} Impact {{ finding.impact }}</strong>
+              </article>
+            {% else %}
+              <p class="muted">No recommendations returned.</p>
+            {% endfor %}
+          </div>
+        </section>
+      </div>
+    </section>
+  {% endfor %}
+{% else %}
+  <p class="muted">No findings were returned.</p>
+{% endif %}

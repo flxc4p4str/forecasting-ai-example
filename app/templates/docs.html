@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Project Docs{% endblock %}
+
+{% block content %}
+<section class="section">
+  <p class="eyebrow">Project docs</p>
+  <h1>How this POC started</h1>
+  <p class="lead">The planning docs live in the repository and capture the original prompt, first plan, and current architecture.</p>
+  <div class="list">
+    {% for filename, label in docs.items() %}
+      <a class="list-row" href="/docs/{{ filename }}">
+        <span>docs/{{ filename }}</span>
+        <span class="muted">{{ label }}</span>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
