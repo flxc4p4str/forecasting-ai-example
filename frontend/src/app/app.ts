@@ -15,6 +15,7 @@ import { Chart, Plugin, registerables } from 'chart.js';
 import { IgxCardModule } from '@infragistics/igniteui-angular/card';
 import { IgxDialogModule } from '@infragistics/igniteui-angular/dialog';
 import { IgxButtonModule } from '@infragistics/igniteui-angular/directives';
+import { IGridRowEventArgs } from '@infragistics/igniteui-angular/grids/core';
 import { IgxGridModule } from '@infragistics/igniteui-angular/grids/grid';
 import { IgxIconModule } from '@infragistics/igniteui-angular/icon';
 import { IgxInputGroupModule } from '@infragistics/igniteui-angular/input-group';
@@ -105,6 +106,10 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
   private chart?: Chart<'line', number[], string>;
   private aiPoll?: Subscription;
 
+  get selectedUploadFileName(): string {
+    return this.selectedUploadFile?.name ?? 'No file selected';
+  }
+
   get forecastRows(): ForecastRow[] {
     if (!this.workspace) {
       return [];
@@ -170,13 +175,13 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
       next: (workspace) => {
         this.isUploading = false;
         this.selectedUploadFile = undefined;
-        this.forecastFileInput?.nativeElement.form?.reset();
+        this.clearForecastFileInput();
         this.applyWorkspace(workspace);
       },
       error: (error: HttpErrorResponse) => {
         this.isUploading = false;
         this.selectedUploadFile = undefined;
-        this.forecastFileInput?.nativeElement.form?.reset();
+        this.clearForecastFileInput();
         const workspace = error.error as ForecastWorkspace | undefined;
         if (workspace?.forecast) {
           this.applyWorkspace(workspace);
@@ -289,6 +294,19 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
     const product = this.productForRow(row);
     if (product) {
       this.selectProduct(product);
+    }
+  }
+
+  onForecastRowClick(event: IGridRowEventArgs): void {
+    const data = event.row?.data as ForecastRow | undefined;
+    if (data) {
+      this.selectProductByRow(data);
+    }
+  }
+
+  private clearForecastFileInput(): void {
+    if (this.forecastFileInput?.nativeElement) {
+      this.forecastFileInput.nativeElement.value = '';
     }
   }
 

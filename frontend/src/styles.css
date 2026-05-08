@@ -22,6 +22,11 @@ a:hover {
   text-decoration: underline;
 }
 
+igx-icon {
+  font-family: "Material Icons";
+  font-feature-settings: "liga";
+}
+
 .topbar {
   border-bottom: 1px solid #d9e2ec;
 }
@@ -258,15 +263,47 @@ canvas {
 }
 
 .inline-upload {
-  align-items: center;
+  align-items: end;
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   justify-content: flex-end;
 }
 
-.file-field {
-  inline-size: min(320px, 100%);
+.visually-hidden-file {
+  height: 1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  width: 1px;
+}
+
+.file-picker {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: auto minmax(160px, 1fr);
+  min-width: min(320px, 100%);
+}
+
+.file-picker-label {
+  color: #334155;
+  font-size: 0.88rem;
+  font-weight: 700;
+  grid-column: 1 / -1;
+}
+
+.file-name {
+  align-items: center;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  color: #64748b;
+  display: flex;
+  min-height: 36px;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .forecast-grid {
@@ -275,23 +312,46 @@ canvas {
   overflow: hidden;
 }
 
-.grid-product-button {
-  align-items: flex-start;
-  display: inline-grid;
-  justify-items: start;
+.forecast-grid igx-grid-cell,
+.forecast-grid igx-grid-header {
+  font-size: 0.88rem;
+}
+
+.forecast-grid ::ng-deep igx-grid-cell:first-child {
+  padding-inline: 0;
+}
+
+.forecast-grid ::ng-deep .igx-grid__td--active {
+  box-shadow: none;
+}
+
+.grid-product-cell {
+  align-content: center;
+  cursor: pointer;
+  display: grid;
+  height: 100%;
   line-height: 1.2;
   min-width: 0;
+  padding: 0 14px 0 24px;
   text-align: left;
   width: 100%;
 }
 
-.grid-product-button small {
+.grid-product-cell span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.grid-product-cell small {
   color: #64748b;
   font-size: 0.78rem;
   font-weight: 600;
+  margin-top: 6px;
 }
 
-.selected-product-button {
+.selected-product-cell {
   box-shadow: inset 4px 0 0 #0f766e;
 }
 

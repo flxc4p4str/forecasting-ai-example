@@ -140,18 +140,20 @@
         <div class="title-row table-heading">
           <h2>Forecast units</h2>
           <form class="inline-upload" (ngSubmit)="uploadForecast()">
-            <igx-input-group type="box" class="file-field">
-              <label igxLabel for="forecastFile">Forecast CSV</label>
-              <input
-                igxInput
-                #forecastFileInput
-                id="forecastFile"
-                type="file"
-                name="forecast_file"
-                accept=".csv,text/csv"
-                (change)="onFileSelected($event)"
-              />
-            </igx-input-group>
+            <input
+              #forecastFileInput
+              id="forecastFile"
+              class="visually-hidden-file"
+              type="file"
+              name="forecast_file"
+              accept=".csv,text/csv"
+              (change)="onFileSelected($event)"
+            />
+            <div class="file-picker">
+              <span class="file-picker-label">Forecast CSV</span>
+              <button igxButton="outlined" type="button" (click)="forecastFileInput.click()">Browse</button>
+              <span class="file-name">{{ selectedUploadFileName }}</span>
+            </div>
             <button igxButton="contained" type="submit" [disabled]="!selectedUploadFile || isUploading">
               @if (isUploading) {
                 <igx-circular-bar [indeterminate]="true" [textVisibility]="false"></igx-circular-bar>
@@ -165,23 +167,23 @@
           class="forecast-grid"
           [data]="forecastRows"
           [autoGenerate]="false"
-          [allowFiltering]="true"
-          [rowSelection]="'single'"
+          [cellSelection]="'none'"
+          [hideRowSelectors]="true"
+          [rowSelection]="'none'"
+          [selectRowOnClick]="false"
           primaryKey="dbId"
           height="470px"
+          (rowClick)="onForecastRowClick($event)"
         >
-          <igx-column field="product" header="Product" [pinned]="true" [sortable]="true" [resizable]="true" width="340px">
+          <igx-column field="product" header="Product" [pinned]="true" [resizable]="true" width="360px">
             <ng-template igxCell let-cell="cell">
-              <button
-                igxButton="flat"
-                class="grid-product-button"
-                type="button"
-                [class.selected-product-button]="selectedProduct?.dbId === $any(cell).row.data.dbId"
-                (click)="selectProductByRow($any(cell).row.data)"
+              <div
+                class="grid-product-cell"
+                [class.selected-product-cell]="selectedProduct?.dbId === $any(cell).row.data.dbId"
               >
                 <span>{{ $any(cell).row.data.product }}</span>
                 <small>{{ $any(cell).row.data.itemCode }}</small>
-              </button>
+              </div>
             </ng-template>
           </igx-column>
           @for (month of data.months; track month) {
@@ -189,7 +191,6 @@
               [field]="month"
               [header]="month"
               dataType="number"
-              [sortable]="true"
               [resizable]="true"
               width="120px"
             ></igx-column>
