@@ -231,11 +231,7 @@ export class App implements AfterViewInit, OnDestroy {
   openAiModal(): void {
     this.isAiModalOpen.set(true);
     this.changeDetector.detectChanges();
-    // TODO: why does the modal's open animation not trigger without this timeout?
-    // setTimeout(() => {
-    //   this.changeDetector.detectChanges();
-    // },100);
-    
+    requestAnimationFrame(() => this.changeDetector.detectChanges());
   }
 
   closeAiModal(): void {
