@@ -6,21 +6,21 @@
 </igx-navbar>
 
 <main class="page">
-  @if (isLoading) {
+  @if (isLoading()) {
     <igx-card class="surface-card state-block">
       <igx-card-content>
         <igx-circular-bar [indeterminate]="true" [textVisibility]="false"></igx-circular-bar>
         <p>Loading forecast workspace...</p>
       </igx-card-content>
     </igx-card>
-  } @else if (loadError) {
+  } @else if (loadError()) {
     <igx-card class="surface-card state-block error-state">
       <igx-card-content>
         <igx-icon>error</igx-icon>
-        <p>{{ loadError }}</p>
+        <p>{{ loadError() }}</p>
       </igx-card-content>
     </igx-card>
-  } @else if (workspace; as data) {
+  } @else if (workspace(); as data) {
     <igx-card class="surface-card hero-card">
       <igx-card-content>
         <div>
@@ -29,24 +29,24 @@
           <p class="lead">
             Demo product, shipment, and forecast history is already loaded. Uploading a CSV only updates forecast units for existing item codes.
           </p>
-          @if (data.forecast.error_message || uploadError) {
-            <p class="error">{{ uploadError || data.forecast.error_message }}</p>
+          @if (data.forecast.error_message || uploadError()) {
+            <p class="error">{{ uploadError() || data.forecast.error_message }}</p>
           }
         </div>
 
         <div class="ai-action">
           <button igxButton="contained" type="button" (click)="openAiModal()">AI-Assisted Forecasting</button>
-          @if (aiStatusText) {
+          @if (aiStatusText()) {
             <div class="ai-status-line" aria-live="polite">
-              <span class="ai-status-content" [class.failed]="aiStatusClass === 'failed'" [class.completed]="aiStatusClass === 'completed'">
-                @if (aiStatusClass === 'queued' || aiStatusClass === 'running') {
+              <span class="ai-status-content" [class.failed]="aiStatusClass() === 'failed'" [class.completed]="aiStatusClass() === 'completed'">
+                @if (aiStatusClass() === 'queued' || aiStatusClass() === 'running') {
                   <igx-circular-bar [indeterminate]="true" [textVisibility]="false"></igx-circular-bar>
-                } @else if (aiStatusClass === 'completed') {
+                } @else if (aiStatusClass() === 'completed') {
                   <igx-icon>check_circle</igx-icon>
                 } @else {
                   <igx-icon>error</igx-icon>
                 }
-                <span>{{ aiStatusText }}</span>
+                <span>{{ aiStatusText() }}</span>
               </span>
             </div>
           }
@@ -54,7 +54,7 @@
       </igx-card-content>
     </igx-card>
 
-    @if (selectedProduct; as product) {
+    @if (selectedProduct(); as product) {
       <igx-card class="surface-card product-profile">
         <igx-card-content>
           <div>
@@ -95,19 +95,19 @@
         </div>
         <div class="chart-shell">
           <canvas #forecastCanvas height="320" (click)="handleCanvasClick($event)"></canvas>
-          @if (tooltipOpen) {
+          @if (tooltipOpen()) {
             <div
               #findingTooltip
               class="finding-tooltip"
-              [style.left.px]="tooltipLeft"
-              [style.top.px]="tooltipTop"
+              [style.left.px]="tooltipLeft()"
+              [style.top.px]="tooltipTop()"
             >
-              <div class="tooltip-heading">{{ tooltipMonth }}</div>
-              @if (tooltipConsiderations.length) {
+              <div class="tooltip-heading">{{ tooltipMonth() }}</div>
+              @if (tooltipConsiderations().length) {
                 <section>
                   <h4>Considerations</h4>
                   <ul>
-                    @for (finding of tooltipConsiderations; track finding.description) {
+                    @for (finding of tooltipConsiderations(); track finding.description) {
                       <li>
                         <strong>{{ impactEmoji(finding.impact) }} {{ signedImpact(finding.impact) }}</strong>
                         <p>{{ finding.description }}</p>
@@ -116,11 +116,11 @@
                   </ul>
                 </section>
               }
-              @if (tooltipRecommendations.length) {
+              @if (tooltipRecommendations().length) {
                 <section>
                   <h4>Recommendations</h4>
                   <ul>
-                    @for (finding of tooltipRecommendations; track finding.description) {
+                    @for (finding of tooltipRecommendations(); track finding.description) {
                       <li>
                         <strong>{{ impactEmoji(finding.impact) }} {{ signedImpact(finding.impact) }}</strong>
                         <p>{{ finding.description }}</p>
@@ -152,20 +152,20 @@
             <div class="file-picker">
               <span class="file-picker-label">Forecast CSV</span>
               <button igxButton="outlined" type="button" (click)="forecastFileInput.click()">Browse</button>
-              <span class="file-name">{{ selectedUploadFileName }}</span>
+              <span class="file-name">{{ selectedUploadFileName() }}</span>
             </div>
-            <button igxButton="contained" type="submit" [disabled]="!selectedUploadFile || isUploading">
-              @if (isUploading) {
+            <button igxButton="contained" type="submit" [disabled]="!selectedUploadFile() || isUploading()">
+              @if (isUploading()) {
                 <igx-circular-bar [indeterminate]="true" [textVisibility]="false"></igx-circular-bar>
               }
-              <span>{{ isUploading ? 'Uploading...' : 'Update forecast CSV' }}</span>
+              <span>{{ isUploading() ? 'Uploading...' : 'Update forecast CSV' }}</span>
             </button>
           </form>
         </div>
 
         <igx-grid
           class="forecast-grid"
-          [data]="forecastRows"
+          [data]="forecastRows()"
           [autoGenerate]="false"
           [cellSelection]="'none'"
           [hideRowSelectors]="true"
@@ -179,7 +179,7 @@
             <ng-template igxCell let-cell="cell">
               <div
                 class="grid-product-cell"
-                [class.selected-product-cell]="selectedProduct?.dbId === $any(cell).row.data.dbId"
+                [class.selected-product-cell]="selectedProduct()?.dbId === $any(cell).row.data.dbId"
               >
                 <span>{{ $any(cell).row.data.product }}</span>
                 <small>{{ $any(cell).row.data.itemCode }}</small>
@@ -203,10 +203,10 @@
 
 <igx-dialog
   class="ai-dialog"
-  [isOpen]="isAiModalOpen"
-  [closeOnEscape]="!isAiSubmitting"
-  [closeOnOutsideSelect]="!isAiSubmitting"
-  (closed)="isAiModalOpen = false"
+  [isOpen]="isAiModalOpen()"
+  [closeOnEscape]="!isAiSubmitting()"
+  [closeOnOutsideSelect]="!isAiSubmitting()"
+  (closed)="isAiModalOpen.set(false)"
 >
   <igx-dialog-title>
     <div>
@@ -230,7 +230,8 @@
         id="forecastContext"
         name="forecast_context"
         rows="5"
-        [(ngModel)]="forecastContext"
+        [ngModel]="forecastContext()"
+        (ngModelChange)="forecastContext.set($event)"
         placeholder="Seasonality, promotions, order history, channel expectations, inventory constraints, or other assumptions already reflected in the numbers."
       ></textarea>
     </igx-input-group>
@@ -242,18 +243,19 @@
         id="blindSpots"
         name="blind_spots"
         rows="4"
-        [(ngModel)]="blindSpots"
+        [ngModel]="blindSpots()"
+        (ngModelChange)="blindSpots.set($event)"
         placeholder="Ask the AI to investigate specific regions, product traits, events, risks, or opportunities."
       ></textarea>
     </igx-input-group>
 
     <div igxDialogActions class="modal-actions">
       <button igxButton="outlined" type="button" (click)="closeAiModal()">Cancel</button>
-      <button igxButton="contained" type="submit" [disabled]="isAiSubmitting">
-        @if (isAiSubmitting) {
+      <button igxButton="contained" type="submit" [disabled]="isAiSubmitting()">
+        @if (isAiSubmitting()) {
           <igx-circular-bar [indeterminate]="true" [textVisibility]="false"></igx-circular-bar>
         }
-        <span>{{ isAiSubmitting ? 'Starting...' : 'Start analysis' }}</span>
+        <span>{{ isAiSubmitting() ? 'Starting...' : 'Start analysis' }}</span>
       </button>
     </div>
   </form>

@@ -1,4 +1,5 @@
 @infragistics:registry=https://packages.infragistics.com/npm/js-licensed/
+legacy-peer-deps=true
 //packages.infragistics.com/npm/js-licensed/:_auth=YOUR_INFRAGISTICS_ACCESS_TOKEN
 //packages.infragistics.com/npm/js-licensed/:username=YOUR_INFRAGISTICS_USERNAME
 //packages.infragistics.com/npm/js-licensed/:email=YOUR_INFRAGISTICS_EMAIL

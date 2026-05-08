@@ -2,13 +2,16 @@ import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   AfterViewInit,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   HostListener,
   OnDestroy,
-  OnInit,
   ViewChild,
+  afterRenderEffect,
+  computed,
   inject,
+  signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Chart, Plugin, registerables } from 'chart.js';
@@ -66,8 +69,10 @@ interface ForecastRow {
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
-export class App implements OnInit, AfterViewInit, OnDestroy {
+export class App implements AfterViewInit, OnDestroy {
   private readonly api = inject(ForecastApi);
+  private readonly changeDetector = inject(ChangeDetectorRef);
+  private readonly workspaceResource = this.api.workspaceResource;
   private readonly findingMarkerPlugin: Plugin<'line'> = {
     id: 'forecastFindingMarkers',
     afterDraw: (chart) => this.drawFindingMarkers(chart),
@@ -77,74 +82,103 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('findingTooltip') private findingTooltip?: ElementRef<HTMLDivElement>;
   @ViewChild('forecastFileInput') private forecastFileInput?: ElementRef<HTMLInputElement>;
 
-  workspace?: ForecastWorkspace;
-  selectedProduct?: ForecastProduct;
-  findings: ForecastFindingPayload = {};
-  markerHitboxes: MarkerHitbox[] = [];
+  readonly selectedProductId = signal<number | null>(null);
+  readonly findingsOverride = signal<ForecastFindingPayload | null>(null);
 
-  selectedUploadFile?: File;
-  isLoading = true;
-  isUploading = false;
-  loadError = '';
-  uploadError = '';
+  readonly selectedUploadFile = signal<File | undefined>(undefined);
+  readonly isUploading = signal(false);
+  readonly uploadError = signal('');
 
-  isAiModalOpen = false;
-  isAiSubmitting = false;
-  aiStatusText = '';
-  aiStatusClass = '';
-  forecastContext = '';
-  blindSpots = '';
+  readonly isAiModalOpen = signal(false);
+  readonly isAiSubmitting = signal(false);
+  readonly aiStatusText = signal('');
+  readonly aiStatusClass = signal('');
+  readonly forecastContext = signal('');
+  readonly blindSpots = signal('');
 
-  tooltipOpen = false;
-  tooltipLeft = 0;
-  tooltipTop = 0;
-  tooltipMonth = '';
-  tooltipConsiderations: ForecastFinding[] = [];
-  tooltipRecommendations: ForecastFinding[] = [];
-  private openMarkerKey: string | null = null;
+  readonly tooltipOpen = signal(false);
+  readonly tooltipLeft = signal(0);
+  readonly tooltipTop = signal(0);
+  readonly tooltipMonth = signal('');
+  readonly tooltipConsiderations = signal<ForecastFinding[]>([]);
+  readonly tooltipRecommendations = signal<ForecastFinding[]>([]);
+  private readonly openMarkerKey = signal<string | null>(null);
 
-  private chart?: Chart<'line', number[], string>;
-  private aiPoll?: Subscription;
+  readonly workspace = computed(() => {
+    if (!this.workspaceResource.hasValue()) {
+      return undefined;
+    }
 
-  get selectedUploadFileName(): string {
-    return this.selectedUploadFile?.name ?? 'No file selected';
-  }
+    return this.workspaceResource.value();
+  });
 
-  get forecastRows(): ForecastRow[] {
-    if (!this.workspace) {
+  readonly isLoading = computed(() => this.workspaceResource.isLoading() && !this.workspaceResource.hasValue());
+  readonly loadError = computed(() => {
+    if (this.workspaceResource.status() !== 'error') {
+      return '';
+    }
+
+    return 'Forecast data could not be loaded. Make sure the Express API server is running.';
+  });
+
+  readonly findings = computed(() => this.findingsOverride() ?? this.workspace()?.findings ?? {});
+
+  readonly selectedProduct = computed(() => {
+    const workspace = this.workspace();
+    if (!workspace) {
+      return undefined;
+    }
+
+    const selectedId = this.selectedProductId();
+    return workspace.products.find((product) => product.dbId === selectedId) ?? workspace.products[0];
+  });
+
+  readonly selectedUploadFileName = computed(() => this.selectedUploadFile()?.name ?? 'No file selected');
+
+  readonly forecastRows = computed(() => {
+    const workspace = this.workspace();
+    if (!workspace) {
       return [];
     }
 
-    return this.workspace.products.map((product) => {
+    return workspace.products.map((product) => {
       const row: ForecastRow = {
         dbId: product.dbId,
         product: product.label,
         itemCode: product.itemCode,
       };
 
-      for (const month of this.workspace?.months ?? []) {
+      for (const month of workspace.months) {
         row[month] = this.forecastValue(product.dbId, month);
       }
 
       return row;
     });
-  }
+  });
 
-  ngOnInit(): void {
-    this.api.getForecast().subscribe({
-      next: (workspace) => {
-        this.isLoading = false;
-        this.applyWorkspace(workspace);
-      },
-      error: () => {
-        this.isLoading = false;
-        this.loadError = 'Forecast data could not be loaded. Make sure the Express API server is running.';
-      },
-    });
-  }
+  private chart?: Chart<'line', number[], string>;
+  private aiPoll?: Subscription;
+  private markerHitboxes: MarkerHitbox[] = [];
+
+  private readonly chartRenderEffect = afterRenderEffect(() => {
+    const workspace = this.workspace();
+    const selectedProduct = this.selectedProduct();
+    this.findings();
+    this.openMarkerKey();
+
+    if (!workspace || !selectedProduct) {
+      return;
+    }
+
+    this.refreshChart(workspace, selectedProduct);
+  });
 
   ngAfterViewInit(): void {
-    this.refreshChart();
+    const workspace = this.workspace();
+    const selectedProduct = this.selectedProduct();
+    if (workspace && selectedProduct) {
+      this.refreshChart(workspace, selectedProduct);
+    }
   }
 
   ngOnDestroy(): void {
@@ -153,81 +187,90 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
   }
 
   selectProduct(product: ForecastProduct): void {
-    this.selectedProduct = product;
+    this.selectedProductId.set(product.dbId);
     this.closeTooltip();
-    this.refreshChart();
   }
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-    this.selectedUploadFile = input.files?.[0] ?? undefined;
-    this.uploadError = '';
+    this.selectedUploadFile.set(input.files?.[0] ?? undefined);
+    this.uploadError.set('');
   }
 
   uploadForecast(): void {
-    if (!this.selectedUploadFile || this.isUploading) {
+    const file = this.selectedUploadFile();
+    if (!file || this.isUploading()) {
       return;
     }
 
-    this.isUploading = true;
-    this.uploadError = '';
-    this.api.uploadForecast(this.selectedUploadFile).subscribe({
+    this.isUploading.set(true);
+    this.uploadError.set('');
+    this.api.uploadForecast(file).subscribe({
       next: (workspace) => {
-        this.isUploading = false;
-        this.selectedUploadFile = undefined;
+        this.isUploading.set(false);
+        this.selectedUploadFile.set(undefined);
+        this.findingsOverride.set(null);
         this.clearForecastFileInput();
         this.applyWorkspace(workspace);
       },
       error: (error: HttpErrorResponse) => {
-        this.isUploading = false;
-        this.selectedUploadFile = undefined;
+        this.isUploading.set(false);
+        this.selectedUploadFile.set(undefined);
         this.clearForecastFileInput();
         const workspace = error.error as ForecastWorkspace | undefined;
         if (workspace?.forecast) {
           this.applyWorkspace(workspace);
-          this.uploadError = workspace.forecast.error_message ?? 'Forecast CSV could not be applied.';
+          this.uploadError.set(workspace.forecast.error_message ?? 'Forecast CSV could not be applied.');
           return;
         }
-        this.uploadError = 'Forecast CSV could not be applied.';
+        this.uploadError.set('Forecast CSV could not be applied.');
       },
     });
   }
 
   openAiModal(): void {
-    this.isAiModalOpen = true;
+    this.isAiModalOpen.set(true);
+    this.changeDetector.detectChanges();
+    // TODO: why does the modal's open animation not trigger without this timeout?
+    // setTimeout(() => {
+    //   this.changeDetector.detectChanges();
+    // },100);
+    
   }
 
   closeAiModal(): void {
-    if (!this.isAiSubmitting) {
-      this.isAiModalOpen = false;
+    if (!this.isAiSubmitting()) {
+      this.isAiModalOpen.set(false);
+      this.changeDetector.detectChanges();
     }
   }
 
   startAiAnalysis(): void {
-    if (this.isAiSubmitting) {
+    if (this.isAiSubmitting()) {
       return;
     }
 
-    this.isAiSubmitting = true;
-    this.aiStatusClass = 'running';
-    this.aiStatusText = 'Queuing analysis...';
+    this.isAiSubmitting.set(true);
+    this.aiStatusClass.set('running');
+    this.aiStatusText.set('Queuing analysis...');
     this.api
       .startAiJob({
-        forecast_context: this.forecastContext,
-        blind_spots: this.blindSpots,
+        forecast_context: this.forecastContext(),
+        blind_spots: this.blindSpots(),
       })
       .subscribe({
         next: (job) => {
-          this.isAiSubmitting = false;
-          this.isAiModalOpen = false;
-          this.aiStatusClass = job.status;
-          this.aiStatusText = 'Analyzing forecast...';
+          this.isAiSubmitting.set(false);
+          this.isAiModalOpen.set(false);
+          this.changeDetector.detectChanges();
+          this.aiStatusClass.set(job.status);
+          this.aiStatusText.set('Analyzing forecast...');
           this.pollAiJob(job.id);
         },
         error: () => {
-          this.isAiSubmitting = false;
-          this.aiStatusClass = 'failed';
-          this.aiStatusText = 'AI analysis could not be started.';
+          this.isAiSubmitting.set(false);
+          this.aiStatusClass.set('failed');
+          this.aiStatusText.set('AI analysis could not be started.');
         },
       });
   }
@@ -255,7 +298,7 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
-    if (!this.tooltipOpen) {
+    if (!this.tooltipOpen()) {
       return;
     }
 
@@ -283,11 +326,11 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
   }
 
   forecastValue(productId: number, month: string): number | string {
-    return this.workspace?.values_by_product[String(productId)]?.[month] ?? '';
+    return this.workspace()?.values_by_product[String(productId)]?.[month] ?? '';
   }
 
   productForRow(row: ForecastRow): ForecastProduct | undefined {
-    return this.workspace?.products.find((product) => product.dbId === row.dbId);
+    return this.workspace()?.products.find((product) => product.dbId === row.dbId);
   }
 
   selectProductByRow(row: ForecastRow): void {
@@ -311,46 +354,41 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private applyWorkspace(workspace: ForecastWorkspace): void {
-    const previousProductId = this.selectedProduct?.dbId;
-    this.workspace = workspace;
-    this.findings = workspace.findings ?? {};
-    this.selectedProduct =
-      workspace.products.find((product) => product.dbId === previousProductId) ?? workspace.products[0];
+    this.workspaceResource.set(workspace);
     this.closeTooltip();
-    this.refreshChart();
   }
 
-  private refreshChart(): void {
-    if (!this.forecastCanvas || !this.workspace || !this.selectedProduct) {
+  private refreshChart(workspace: ForecastWorkspace, selectedProduct: ForecastProduct): void {
+    if (!this.forecastCanvas) {
       return;
     }
 
     if (!this.chart) {
-      this.chart = this.createChart();
+      this.chart = this.createChart(workspace, selectedProduct);
       return;
     }
 
-    this.chart.data.labels = this.workspace.months;
-    this.chart.data.datasets[0].data = this.selectedProduct.thisYearForecast;
-    this.chart.data.datasets[1].data = this.selectedProduct.lastYearForecast;
-    this.chart.data.datasets[2].data = this.selectedProduct.lastYearActual;
+    this.chart.data.labels = workspace.months;
+    this.chart.data.datasets[0].data = selectedProduct.thisYearForecast;
+    this.chart.data.datasets[1].data = selectedProduct.lastYearForecast;
+    this.chart.data.datasets[2].data = selectedProduct.lastYearActual;
     this.chart.update();
   }
 
-  private createChart(): Chart<'line', number[], string> {
+  private createChart(workspace: ForecastWorkspace, selectedProduct: ForecastProduct): Chart<'line', number[], string> {
     const canvas = this.forecastCanvas?.nativeElement;
-    if (!canvas || !this.workspace || !this.selectedProduct) {
+    if (!canvas) {
       throw new Error('Chart cannot be initialized before forecast data is ready.');
     }
 
     return new Chart(canvas, {
       type: 'line',
       data: {
-        labels: this.workspace.months,
+        labels: workspace.months,
         datasets: [
           {
             label: 'This year forecast',
-            data: this.selectedProduct.thisYearForecast,
+            data: selectedProduct.thisYearForecast,
             borderColor: '#0f766e',
             backgroundColor: 'rgba(15, 118, 110, 0.12)',
             borderWidth: 3,
@@ -361,7 +399,7 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
           },
           {
             label: 'Last year forecast',
-            data: this.selectedProduct.lastYearForecast,
+            data: selectedProduct.lastYearForecast,
             borderColor: '#b45309',
             borderDash: [6, 5],
             borderWidth: 2,
@@ -371,7 +409,7 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
           },
           {
             label: 'Last year actual',
-            data: this.selectedProduct.lastYearActual,
+            data: selectedProduct.lastYearActual,
             borderColor: '#4b5563',
             backgroundColor: 'rgba(75, 85, 99, 0.08)',
             borderWidth: 2,
@@ -420,39 +458,43 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
         next: (job) => this.applyAiJob(job),
         error: () => {
           this.aiPoll?.unsubscribe();
-          this.aiStatusClass = 'failed';
-          this.aiStatusText = 'AI analysis status could not be loaded.';
+          this.aiStatusClass.set('failed');
+          this.aiStatusText.set('AI analysis status could not be loaded.');
         },
       });
   }
 
   private applyAiJob(job: AIJob): void {
-    this.aiStatusClass = job.status;
+    this.aiStatusClass.set(job.status);
 
     if (job.status === 'failed') {
       this.aiPoll?.unsubscribe();
-      this.aiStatusText = job.error_message ?? 'AI analysis failed.';
+      this.aiStatusText.set(job.error_message ?? 'AI analysis failed.');
       return;
     }
 
     if (job.status === 'completed') {
       this.aiPoll?.unsubscribe();
-      this.aiStatusText = 'AI suggestions added to chart markers.';
-      this.findings = job.findings ?? {};
-      if (this.workspace) {
-        this.workspace = { ...this.workspace, findings: this.findings };
+      this.aiStatusText.set('AI suggestions added to chart markers.');
+      this.findingsOverride.set(job.findings ?? {});
+      const workspace = this.workspace();
+      if (workspace) {
+        this.workspaceResource.set({ ...workspace, findings: job.findings ?? {} });
+        this.findingsOverride.set(null);
       }
       this.closeTooltip();
       this.chart?.update();
       return;
     }
 
-    this.aiStatusText = 'Analyzing forecast...';
+    this.aiStatusText.set('Analyzing forecast...');
   }
 
   private drawFindingMarkers(chart: Chart<'line'>): void {
     this.markerHitboxes = [];
-    if (!this.selectedProduct || !this.workspace) {
+    const selectedProduct = this.selectedProduct();
+    const workspace = this.workspace();
+    if (!selectedProduct || !workspace) {
       return;
     }
 
@@ -461,10 +503,10 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    const findingsByMonth = this.findings[String(this.selectedProduct.dbId)] ?? {};
+    const findingsByMonth = this.findings()[String(selectedProduct.dbId)] ?? {};
     const ctx = chart.ctx;
 
-    this.workspace.months.forEach((month, index) => {
+    workspace.months.forEach((month, index) => {
       const findings = findingsByMonth[month] ?? [];
       if (!findings.length) {
         return;
@@ -472,7 +514,7 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
 
       const x = xScale.getPixelForValue(index);
       const y = xScale.top + 16;
-      const key = `${this.selectedProduct?.dbId}:${month}`;
+      const key = `${selectedProduct.dbId}:${month}`;
       const marker = this.markerStyle(findings);
       this.markerHitboxes.push({ x, y, key, month, findings });
 
@@ -481,8 +523,8 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
       ctx.arc(x, y, 9, 0, Math.PI * 2);
       ctx.fillStyle = marker.fill;
       ctx.fill();
-      ctx.strokeStyle = key === this.openMarkerKey ? '#111827' : '#ffffff';
-      ctx.lineWidth = key === this.openMarkerKey ? 2.5 : 2;
+      ctx.strokeStyle = key === this.openMarkerKey() ? '#111827' : '#ffffff';
+      ctx.lineWidth = key === this.openMarkerKey() ? 2.5 : 2;
       ctx.stroke();
       ctx.fillStyle = '#ffffff';
       ctx.font = '800 14px system-ui, sans-serif';
@@ -494,23 +536,23 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private toggleTooltip(hitbox: MarkerHitbox): void {
-    if (this.openMarkerKey === hitbox.key) {
+    if (this.openMarkerKey() === hitbox.key) {
       this.closeTooltip();
       return;
     }
 
-    this.openMarkerKey = hitbox.key;
-    this.tooltipMonth = hitbox.month;
-    this.tooltipConsiderations = hitbox.findings.filter((finding) => finding.type === 'consideration');
-    this.tooltipRecommendations = hitbox.findings.filter((finding) => finding.type === 'recommendation');
-    this.tooltipLeft = hitbox.x + 18;
-    this.tooltipTop = hitbox.y + 18;
-    this.tooltipOpen = true;
+    this.openMarkerKey.set(hitbox.key);
+    this.tooltipMonth.set(hitbox.month);
+    this.tooltipConsiderations.set(hitbox.findings.filter((finding) => finding.type === 'consideration'));
+    this.tooltipRecommendations.set(hitbox.findings.filter((finding) => finding.type === 'recommendation'));
+    this.tooltipLeft.set(hitbox.x + 18);
+    this.tooltipTop.set(hitbox.y + 18);
+    this.tooltipOpen.set(true);
   }
 
   private closeTooltip(): void {
-    this.openMarkerKey = null;
-    this.tooltipOpen = false;
+    this.openMarkerKey.set(null);
+    this.tooltipOpen.set(false);
   }
 
   private markerStyle(findings: ForecastFinding[]): { fill: string; symbol: string } {

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, httpResource } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 
 export interface ForecastSummary {
@@ -58,10 +58,7 @@ export interface AIJobCreate {
 @Injectable({ providedIn: 'root' })
 export class ForecastApi {
   private readonly http = inject(HttpClient);
-
-  getForecast() {
-    return this.http.get<ForecastWorkspace>('/api/forecast');
-  }
+  readonly workspaceResource = httpResource<ForecastWorkspace>(() => '/api/forecast');
 
   uploadForecast(file: File) {
     const formData = new FormData();
