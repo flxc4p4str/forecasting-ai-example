@@ -5,15 +5,66 @@ const express = require('express');
 const multer = require('multer');
 const { parse } = require('csv-parse/sync');
 
+loadEnvFile(path.join(__dirname, '..', '.env'));
+
 const app = express();
 const upload = multer({ storage: multer.memoryStorage() });
 const port = Number(process.env.PORT || 3000);
 const docsDir = path.join(__dirname, '..', 'docs');
+const promptsDir = path.join(__dirname, '..', 'app', 'prompts');
+const openAiApiKey = (process.env.OPENAI_API_KEY || '').trim();
+const openAiModel = (process.env.OPENAI_MODEL || 'gpt-5').trim();
+const demoAiWithoutKey = parseBooleanEnv(process.env.DEMO_AI_WITHOUT_KEY, true);
+const openAiBaseUrl = (process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1').replace(/\/+$/, '');
 
 const docFiles = {
   'original-prompt.md': 'Original prompt',
   'initial-plan.md': 'Initial plan',
   'architecture.md': 'Architecture',
+};
+
+const forecastAnalysisSchema = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['findings'],
+  properties: {
+    findings: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['product_id', 'month_year', 'considerations', 'recommendations'],
+        properties: {
+          product_id: { type: 'string' },
+          month_year: { type: 'string', pattern: '^\\d{4}-\\d{2}$' },
+          considerations: {
+            type: 'array',
+            items: {
+              type: 'object',
+              additionalProperties: false,
+              required: ['description', 'impact'],
+              properties: {
+                description: { type: 'string' },
+                impact: { type: 'integer', minimum: -3, maximum: 3 },
+              },
+            },
+          },
+          recommendations: {
+            type: 'array',
+            items: {
+              type: 'object',
+              additionalProperties: false,
+              required: ['description', 'impact'],
+              properties: {
+                description: { type: 'string' },
+                impact: { type: 'integer', minimum: -3, maximum: 3 },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
 };
 
 const productSeeds = [
@@ -149,17 +200,7 @@ app.post('/api/ai-jobs', (request, response) => {
   };
   state.jobs.set(job.id, job);
 
-  setTimeout(() => {
-    if (state.jobs.has(job.id)) {
-      job.status = 'running';
-    }
-  }, 200);
-  setTimeout(() => {
-    if (state.jobs.has(job.id)) {
-      job.status = 'completed';
-      job.findings = demoFindingPayload();
-    }
-  }, 1200);
+  setTimeout(() => runAiJob(job.id), 0);
 
   response.json(aiJobPayload(job));
 });
@@ -256,6 +297,44 @@ function seedDemoData(today = new Date()) {
   };
 }
 
+function loadEnvFile(filePath) {
+  if (!fs.existsSync(filePath)) {
+    return;
+  }
+
+  for (const line of fs.readFileSync(filePath, 'utf8').split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) {
+      continue;
+    }
+
+    const separatorIndex = trimmed.indexOf('=');
+    if (separatorIndex < 0) {
+      continue;
+    }
+
+    const key = trimmed.slice(0, separatorIndex).trim();
+    let value = trimmed.slice(separatorIndex + 1).trim();
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1);
+    }
+
+    if (key && process.env[key] === undefined) {
+      process.env[key] = value;
+    }
+  }
+}
+
+function parseBooleanEnv(value, defaultValue) {
+  if (value === undefined || value === null || value === '') {
+    return defaultValue;
+  }
+  return ['1', 'true', 'yes', 'on'].includes(String(value).trim().toLowerCase());
+}
+
 function forecastWorkspacePayload() {
   const products = chartPayload();
   return {
@@ -299,6 +378,250 @@ function completedFindingPayload() {
     }
   }
   return {};
+}
+
+async function runAiJob(jobId) {
+  const job = state.jobs.get(jobId);
+  if (!job || !['queued', 'running'].includes(job.status)) {
+    return;
+  }
+
+  try {
+    job.status = 'running';
+    console.log('openAiApiKey', openAiApiKey);
+    if (openAiApiKey) {
+      const { responseId, findings } = await requestOpenAiFindings(loadForecastPayload(), job.user_context);
+      job.openai_response_id = responseId;
+      job.findings = findingsToPayload(findings);
+    } else if (demoAiWithoutKey) {
+      job.findings = demoFindingPayload();
+    } else {
+      throw new Error('OPENAI_API_KEY is required to run AI analysis.');
+    }
+
+    job.status = 'completed';
+    job.error_message = null;
+  } catch (error) {
+    job.status = 'failed';
+    job.error_message = error.message || 'AI analysis failed.';
+    job.findings = {};
+  }
+}
+
+function loadForecastPayload() {
+  const months = currentMonths();
+  const products = state.products.map((product) => ({
+    product_id: product.item_code,
+    product_name: product.product_name,
+    brand: product.brand,
+    type: product.product_type,
+    description: product.description,
+    retail_price: product.retail_price,
+    forecast_units: Object.fromEntries(months.map((month) => [month, product.forecast_values[month] || 0])),
+    last_year_actual_units: Object.fromEntries(
+      months.map((month) => [month, product.actual_shipments[sameMonthLastYear(month)] || 0]),
+    ),
+    last_year_forecast_units: Object.fromEntries(
+      months.map((month) => [month, product.historical_forecasts[sameMonthLastYear(month)] || 0]),
+    ),
+  }));
+
+  return { forecast_upload_id: state.forecast.id, products };
+}
+
+async function requestOpenAiFindings(forecastPayload, userContext) {
+  const response = await openAiRequest('/responses', {
+    method: 'POST',
+    body: JSON.stringify({
+      model: openAiModel,
+      background: true,
+      tools: [{ type: 'web_search' }],
+      text: {
+        format: {
+          type: 'json_schema',
+          name: 'forecast_ai_findings',
+          strict: true,
+          schema: forecastAnalysisSchema,
+        },
+      },
+      input: [
+        {
+          role: 'system',
+          content: loadPrompt('ai_researcher.md'),
+        },
+        {
+          role: 'user',
+          content: JSON.stringify({
+            forecast: forecastPayload,
+            customer_context: {
+              business_type:
+                'ERP customer planning sell-through support for specialty beauty, fragrance, department-store, and boutique retail accounts.',
+              market: 'United States demo market unless the user context narrows the geography.',
+              provided_notes: userContext || 'No customer-specific notes provided.',
+            },
+            user_context: userContext,
+            impact_scale: '-3 to +3, where negative means downward pressure on unit demand.',
+            recommendation_policy: loadPrompt('recommendation_policy.md'),
+            quality_bar:
+              'Prefer no finding over a generic one. Each finding should name a concrete market signal, season, cultural moment, or product-specific angle.',
+          }),
+        },
+      ],
+    }),
+  });
+console.log('response', response);
+  const completedResponse = await waitForOpenAiResponse(response);
+  const outputText = extractOutputText(completedResponse);
+  if (!outputText) {
+    throw new Error('OpenAI response did not include output text.');
+  }
+
+  return {
+    responseId: completedResponse.id,
+    findings: parseAiResponse(JSON.parse(outputText)),
+  };
+}
+
+async function waitForOpenAiResponse(response) {
+  let current = response;
+  const responseId = current.id;
+  if (!responseId) {
+    throw new Error('OpenAI response did not include an id.');
+  }
+  
+  const deadline = Date.now() + 240000;
+  while (['queued', 'in_progress','running'].includes(current.status)) {
+    console.log('current.status', current.status);
+    if (Date.now() > deadline) {
+      throw new Error('OpenAI response polling timed out.');
+    }
+    await sleep(2000);
+    current = await openAiRequest(`/responses/${encodeURIComponent(responseId)}`);
+  }
+
+  if (current.status !== 'completed') {
+    throw new Error(openAiResponseError(current) || `OpenAI response ended with status ${current.status}.`);
+  }
+  console.log('current.status', current.status);
+  return current;
+}
+
+async function openAiRequest(pathname, options = {}) {
+  const response = await fetch(`${openAiBaseUrl}${pathname}`, {
+    ...options,
+    headers: {
+      Authorization: `Bearer ${openAiApiKey}`,
+      'Content-Type': 'application/json',
+      ...(options.headers || {}),
+    },
+  });
+  const payload = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    const message = payload?.error?.message || `OpenAI request failed with status ${response.status}.`;
+    throw new Error(message);
+  }
+
+  return payload;
+}
+
+function sleep(milliseconds) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, milliseconds);
+  });
+}
+
+function loadPrompt(fileName) {
+  return fs.readFileSync(path.join(promptsDir, fileName), 'utf8').trim();
+}
+
+function extractOutputText(response) {
+  if (typeof response.output_text === 'string') {
+    return response.output_text;
+  }
+
+  const chunks = [];
+  for (const item of response.output || []) {
+    for (const content of item.content || []) {
+      if (typeof content.text === 'string') {
+        chunks.push(content.text);
+      }
+    }
+  }
+  return chunks.join('');
+}
+
+function openAiResponseError(response) {
+  return response?.error?.message || response?.incomplete_details?.reason || '';
+}
+
+function parseAiResponse(payload) {
+  const findings = [];
+  if (!Array.isArray(payload?.findings)) {
+    return findings;
+  }
+
+  for (const item of payload.findings) {
+    if (!item || typeof item !== 'object') {
+      continue;
+    }
+
+    findings.push({
+      productId: String(item.product_id),
+      monthYear: String(item.month_year),
+      considerations: parseAiItems(item.considerations),
+      recommendations: parseAiItems(item.recommendations),
+    });
+  }
+
+  return findings;
+}
+
+function parseAiItems(items) {
+  if (!Array.isArray(items)) {
+    return [];
+  }
+
+  return items
+    .filter((item) => item && typeof item === 'object')
+    .map((item) => ({
+      description: String(item.description || ''),
+      impact: validatedImpact(item.impact),
+    }))
+    .filter((item) => item.description);
+}
+
+function validatedImpact(value) {
+  const impact = Number.parseInt(value, 10);
+  if (!Number.isInteger(impact) || impact < -3 || impact > 3) {
+    throw new Error('Impact must be between -3 and +3.');
+  }
+  return impact;
+}
+
+function findingsToPayload(findings) {
+  const productsByCode = new Map(state.products.map((product) => [product.item_code, product]));
+  const payload = {};
+
+  for (const finding of findings) {
+    const product = productsByCode.get(finding.productId);
+    if (!product || !product.forecast_values[finding.monthYear]) {
+      continue;
+    }
+
+    const monthFindings = [
+      ...finding.considerations.map((item) => ({ type: 'consideration', ...item })),
+      ...finding.recommendations.map((item) => ({ type: 'recommendation', ...item })),
+    ];
+    if (!monthFindings.length) {
+      continue;
+    }
+
+    payload[String(product.id)] ||= {};
+    payload[String(product.id)][finding.monthYear] = monthFindings;
+  }
+
+  return payload;
 }
 
 function parseForecastCsv(contents) {

@@ -256,6 +256,7 @@ export class App implements AfterViewInit, OnDestroy {
       })
       .subscribe({
         next: (job) => {
+          console.log('job', job);
           this.isAiSubmitting.set(false);
           this.isAiModalOpen.set(false);
           this.changeDetector.detectChanges();

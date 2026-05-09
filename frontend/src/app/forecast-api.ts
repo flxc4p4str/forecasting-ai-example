@@ -67,6 +67,7 @@ export class ForecastApi {
   }
 
   startAiJob(payload: AIJobCreate) {
+    console.log('payload', payload);
     return this.http.post<AIJob>('/api/ai-jobs', payload);
   }
 
