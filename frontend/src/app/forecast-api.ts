@@ -58,20 +58,20 @@ export interface AIJobCreate {
 @Injectable({ providedIn: 'root' })
 export class ForecastApi {
   private readonly http = inject(HttpClient);
-  readonly workspaceResource = httpResource<ForecastWorkspace>(() => '/api/forecast');
+  readonly workspaceResource = httpResource<ForecastWorkspace>(() => 'http://ngrok.robertwall.info/api/forecast');
 
   uploadForecast(file: File) {
     const formData = new FormData();
     formData.append('forecast_file', file);
-    return this.http.post<ForecastWorkspace>('/api/forecasts', formData);
+    return this.http.post<ForecastWorkspace>('/api/ai/forecasts', formData);
   }
 
   startAiJob(payload: AIJobCreate) {
     console.log('payload', payload);
-    return this.http.post<AIJob>('/api/ai-jobs', payload);
+    return this.http.post<AIJob>('http://ngrok.robertwall.info/api/ai-jobs', payload);
   }
 
   getAiJob(jobId: number) {
-    return this.http.get<AIJob>(`/api/ai-jobs/${jobId}`);
+    return this.http.get<AIJob>(`http://ngrok.robertwall.info/api/ai-jobs/${jobId}`);
   }
 }
