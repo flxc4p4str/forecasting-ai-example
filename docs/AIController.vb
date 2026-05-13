@@ -24,15 +24,18 @@ Namespace intapi
         Inherits ABSController
 
         Private ReadOnly _webHostEnvironment As IWebHostEnvironment
+        Private ReadOnly _openAISettings As IOpenAISettings
 
         Private Shared ReadOnly httpClient As New HttpClient()
         Private Shared ReadOnly stateLock As New Object()
         Private Shared state As AIForecastState = SeedDemoData()
 
 #Region "Instantiate"
-        Public Sub New(EWSsettings As IEWSSettings, JWTsettings As IJWTSettings, ABSSettings As IABSSettings, hostingEnvironment As IWebHostEnvironment, httpContextAccessor As IHttpContextAccessor)
+        Public Sub New(EWSsettings As IEWSSettings, JWTsettings As IJWTSettings, ABSSettings As IABSSettings _
+                       , hostingEnvironment As IWebHostEnvironment, httpContextAccessor As IHttpContextAccessor, OpenAISettings As IOpenAISettings)
             MyBase.New(EWSsettings, JWTsettings, ABSSettings, hostingEnvironment, httpContextAccessor)
             _webHostEnvironment = hostingEnvironment
+            _openAISettings = OpenAISettings
         End Sub
 #End Region
 
@@ -100,6 +103,8 @@ Namespace intapi
 
             Using TryCast(ASCDATA1, IDisposable)
                 Try
+                    ASCDATA1.Create_TDA(dst.Tables.Add, "AITREQST", "*")
+
                     Dim userContext As String = BuildUserContext(request)
                     Dim forecastPayload As JObject = LoadForecastPayload()
                     Dim forecastUploadId As String = forecastPayload.Value(Of String)("forecast_upload_id")
@@ -109,7 +114,7 @@ Namespace intapi
                     Dim demoAIWithoutKey As Boolean = ParseBoolean(ConfigValue("DEMO_AI_WITHOUT_KEY", "true"), True)
                     Dim webSearchTool As String = ConfigValue("OPENAI_WEB_SEARCH_TOOL", "web_search").Trim()
                     Dim promptRoot As String = Path.Combine(_webHostEnvironment.ContentRootPath, "app", "prompts")
-                    Dim connectionString As String = ASCDATA1._oracon.ConnectionString
+                    Dim connectionString As String = GetOracleConnectionStringForBackground(ASCDATA1, ASCDATA1._oracon)
                     Dim requestNo As String = ""
 
                     Dim job As AIJob
@@ -142,7 +147,6 @@ Namespace intapi
                         requestHash,
                         model,
                         "QUEUED",
-                        Nothing,
                         Nothing,
                         Nothing,
                         Nothing,
@@ -204,6 +208,24 @@ Namespace intapi
         End Function
 
         ' Keeps compatibility with the current Angular/Express endpoint: GET /forecasts/template.csv
+
+
+        ' Developer diagnostic endpoint: GET /api/ai/check-openai
+        ' Use this to verify that the Web API process can see the OpenAI API key,
+        ' reach the OpenAI platform, access the configured model, create a tiny response,
+        ' and optionally read organization usage/cost data when the key has permission.
+        <HttpGet("/api/ai/check-openai")>
+        Public Async Function CheckOpenAI() As Task(Of IActionResult)
+            Try
+                Dim diagnostics As JObject = Await BuildOpenAIDiagnosticsAsync()
+                Return Ok(diagnostics)
+            Catch ex As Exception
+                ERRORS.Add(ex.Message)
+                API_Result = New With {.SUCCESS = False, .ERRORS = ERRORS}
+                Return StatusCode(500, API_Result)
+            End Try
+        End Function
+
         <HttpGet("/forecasts/template.csv")>
         Public Function ForecastTemplateCsvDownload() As IActionResult
             Dim csv As String = ForecastTemplateCsv()
@@ -215,7 +237,7 @@ Namespace intapi
 
 #Region "AI Job Processing"
 
-        Private Shared Async Function RunAIJobAsync(workItem As AIBackgroundWorkItem) As Task
+        Private Async Function RunAIJobAsync(workItem As AIBackgroundWorkItem) As Task
             Dim startedAt As DateTime = DateTime.UtcNow
             Dim requestJson As String = ""
             Dim responseJson As String = ""
@@ -228,7 +250,7 @@ Namespace intapi
 
             Try
                 SetJobRunning(workItem.JobId)
-                UpdateAIRequestStatus(workItem.OracleConnectionString, workItem.AIRequestNo, "RUNNING", Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing)
+                UpdateAIRequestStatus(workItem.OracleConnectionString, workItem.AIRequestNo, "RUNNING", Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing)
 
                 Dim findingsPayload As JObject
 
@@ -478,14 +500,14 @@ Namespace intapi
 
             Using oraCon As New OracleConnection(connectionString)
                 oraCon.Open()
-                Dim sql As String = "UPDATE AITREQST SET " &
-                    "STATUS_CODE = :STATUS_CODE, HTTP_STATUS = :HTTP_STATUS, OPENAI_RESPONSE_ID = :OPENAI_RESPONSE_ID, " &
-                    "REQUEST_JSON = :REQUEST_JSON, RESPONSE_JSON = :RESPONSE_JSON, " &
-                    "OUTPUT_TEXT = :OUTPUT_TEXT, ERROR_MESSAGE = :ERROR_MESSAGE, DURATION_MS = :DURATION_MS, " &
-                    "PROMPT_TOKENS = :PROMPT_TOKENS, COMPLETION_TOKENS = :COMPLETION_TOKENS, TOTAL_TOKENS = :TOTAL_TOKENS, " &
-                    "DATE_CHANGED = SYSDATE, CHANGED_BY = :CHANGED_BY " &
-                    "WHERE AI_REQUEST_NO = :AI_REQUEST_NO"
 
+                Dim sql As String = "UPDATE AITREQST SET " &
+                   "STATUS_CODE = :STATUS_CODE, HTTP_STATUS = :HTTP_STATUS, OPENAI_RESPONSE_ID = :OPENAI_RESPONSE_ID, " &
+                   "REQUEST_JSON = :REQUEST_JSON, RESPONSE_JSON = :RESPONSE_JSON, " &
+                   "OUTPUT_TEXT = :OUTPUT_TEXT, ERROR_MESSAGE = :ERROR_MESSAGE, DURATION_MS = :DURATION_MS, " &
+                   "PROMPT_TOKENS = :PROMPT_TOKENS, COMPLETION_TOKENS = :COMPLETION_TOKENS, TOTAL_TOKENS = :TOTAL_TOKENS, " &
+                   "DATE_CHANGED = SYSDATE, CHANGED_BY = :CHANGED_BY " &
+                   "WHERE AI_REQUEST_NO = :AI_REQUEST_NO"
                 Using cmd As New OracleCommand(sql, oraCon)
                     cmd.BindByName = True
                     AddVarchar(cmd, "STATUS_CODE", statusCode, 20)
@@ -504,6 +526,7 @@ Namespace intapi
                     cmd.ExecuteNonQuery()
                 End Using
             End Using
+
         End Sub
 
         Private Shared Sub EnsureConnectionOpen(oraCon As OracleConnection)
@@ -514,6 +537,50 @@ Namespace intapi
                 oraCon.Open()
             End If
         End Sub
+
+        Private Shared Function GetOracleConnectionStringForBackground(ascdata As Object, oraCon As OracleConnection) As String
+            ' OracleConnection.ConnectionString intentionally does not reliably expose the password after the connection is opened.
+            ' The background AI task must open its own connection after the HTTP request finishes, so copy the original
+            ' ASCDATA1 private connection string while the request-scoped object is still alive.
+            Dim connectionString As String = ""
+
+            If ascdata IsNot Nothing Then
+                Dim flags As System.Reflection.BindingFlags = System.Reflection.BindingFlags.Instance Or System.Reflection.BindingFlags.NonPublic Or System.Reflection.BindingFlags.Public
+
+                Dim fieldInfo As System.Reflection.FieldInfo = ascdata.GetType().GetField("oracleConnectionString", flags)
+                If fieldInfo IsNot Nothing Then
+                    Dim value As Object = fieldInfo.GetValue(ascdata)
+                    If value IsNot Nothing Then
+                        connectionString = value.ToString()
+                    End If
+                End If
+
+                If String.IsNullOrWhiteSpace(connectionString) Then
+                    Dim propInfo As System.Reflection.PropertyInfo = ascdata.GetType().GetProperty("oracleConnectionString", flags)
+                    If propInfo IsNot Nothing Then
+                        Dim value As Object = propInfo.GetValue(ascdata, Nothing)
+                        If value IsNot Nothing Then
+                            connectionString = value.ToString()
+                        End If
+                    End If
+                End If
+            End If
+
+            If String.IsNullOrWhiteSpace(connectionString) AndAlso oraCon IsNot Nothing Then
+                connectionString = oraCon.ConnectionString
+            End If
+
+            If String.IsNullOrWhiteSpace(connectionString) Then
+                Throw New Exception("Unable to determine the Oracle connection string for the AI background task.")
+            End If
+
+            Dim builder As New OracleConnectionStringBuilder(connectionString)
+            If String.IsNullOrWhiteSpace(builder.Password) Then
+                Throw New Exception("The Oracle connection string available to the AI background task does not include a password. Do not use OracleConnection.ConnectionString for background work; pass the original ASCDATA1 connection string.")
+            End If
+
+            Return connectionString
+        End Function
 
         Private Shared Sub AddVarchar(cmd As OracleCommand, name As String, value As String, size As Integer)
             Dim p As New OracleParameter(name, OracleDbType.Varchar2, size)
@@ -1083,12 +1150,12 @@ Namespace intapi
                 Return envValue
             End If
 
-            If ABSSettings IsNot Nothing Then
+            If _openAISettings IsNot Nothing Then
                 Dim candidates As String() = New String() {key, key.Replace("_", ""), ToPascalCase(key), ToPascalCase(key.Replace("OPENAI_", "OPEN_AI_"))}
                 For Each candidate As String In candidates
-                    Dim prop = ABSSettings.GetType().GetProperty(candidate)
+                    Dim prop = _openAISettings.GetType().GetProperty(candidate)
                     If prop IsNot Nothing Then
-                        Dim value As Object = prop.GetValue(ABSSettings, Nothing)
+                        Dim value As Object = prop.GetValue(_openAISettings, Nothing)
                         If value IsNot Nothing AndAlso Not String.IsNullOrWhiteSpace(value.ToString()) Then
                             Return value.ToString()
                         End If
@@ -1097,6 +1164,223 @@ Namespace intapi
             End If
 
             Return defaultValue
+        End Function
+
+
+        Private Async Function BuildOpenAIDiagnosticsAsync() As Task(Of JObject)
+            Dim startedAt As DateTime = DateTime.UtcNow
+            Dim model As String = ConfigValue("OPENAI_MODEL", "gpt-5").Trim()
+            Dim baseUrl As String = ConfigValue("OPENAI_BASE_URL", "https://api.openai.com/v1").Trim().TrimEnd("/"c)
+            Dim apiKey As String = ConfigValue("OPENAI_API_KEY", "").Trim()
+
+            Dim result As New JObject(
+                New JProperty("success", False),
+                New JProperty("checked_at_utc", DateTime.UtcNow.ToString("o")),
+                New JProperty("openai_base_url", baseUrl),
+                New JProperty("configured_model", model),
+                New JProperty("api_key_present", Not String.IsNullOrWhiteSpace(apiKey)),
+                New JProperty("api_key_masked", MaskSecret(apiKey)),
+                New JProperty("notes", New JArray())
+            )
+
+            Dim notes As JArray = CType(result("notes"), JArray)
+
+            If String.IsNullOrWhiteSpace(apiKey) Then
+                notes.Add("OPENAI_API_KEY is blank or not visible to the Web API process.")
+                result("duration_ms") = CInt(DateTime.UtcNow.Subtract(startedAt).TotalMilliseconds)
+                Return result
+            End If
+
+            If String.IsNullOrWhiteSpace(model) Then
+                notes.Add("OPENAI_MODEL is blank. Set OPENAI_MODEL or verify the OpenAISettings property used by ConfigValue.")
+            End If
+
+            Dim modelsCheck As JObject = Await OpenAIDiagnosticRequestAsync(baseUrl, apiKey, "/models", HttpMethod.Get, Nothing)
+            result("models_check") = modelsCheck
+
+            Dim modelFound As Boolean = False
+            Dim accessibleModelCount As Integer = 0
+            Dim modelIds As New JArray()
+
+            If modelsCheck.Value(Of Boolean)("success") Then
+                Dim data As JArray = TryCast(modelsCheck.SelectToken("payload.data"), JArray)
+                If data IsNot Nothing Then
+                    accessibleModelCount = data.Count
+                    For Each item As JObject In data.OfType(Of JObject)()
+                        Dim id As String = item.Value(Of String)("id")
+                        If Not String.IsNullOrWhiteSpace(id) Then
+                            If modelIds.Count < 50 Then
+                                modelIds.Add(id)
+                            End If
+                            If String.Equals(id, model, StringComparison.OrdinalIgnoreCase) Then
+                                modelFound = True
+                            End If
+                        End If
+                    Next
+                End If
+            Else
+                notes.Add("GET /models failed. This usually means the API key is invalid, revoked, missing model permissions, or outbound HTTPS is blocked from the server.")
+            End If
+
+            result("configured_model_found") = modelFound
+            result("accessible_model_count") = accessibleModelCount
+            result("sample_accessible_models") = modelIds
+
+            Dim responseBody As JObject = BuildOpenAIDiagnosticResponseBody(model)
+            Dim responseCheck As JObject = Await OpenAIDiagnosticRequestAsync(baseUrl, apiKey, "/responses", HttpMethod.Post, responseBody.ToString(Formatting.None))
+            result("responses_check") = responseCheck
+
+            If responseCheck.Value(Of Boolean)("success") Then
+                result("response_id") = responseCheck.SelectToken("payload.id")?.ToString()
+                result("response_status") = responseCheck.SelectToken("payload.status")?.ToString()
+                result("output_text") = ExtractOutputText(TryCast(responseCheck("payload"), JObject))
+                result("usage") = If(responseCheck.SelectToken("payload.usage") IsNot Nothing, responseCheck.SelectToken("payload.usage").DeepClone(), New JObject())
+                result("rate_limit_headers") = If(responseCheck("rate_limit_headers") IsNot Nothing, responseCheck("rate_limit_headers").DeepClone(), New JObject())
+            Else
+                notes.Add("POST /responses failed. The key may be valid for /models but not authorized for the configured model or the Responses API request shape.")
+            End If
+
+            Dim unixEpoch As New DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+            Dim endTime As Long = CLng((DateTime.UtcNow - unixEpoch).TotalSeconds)
+            Dim startTime As Long = CLng((DateTime.UtcNow.AddDays(-1) - unixEpoch).TotalSeconds)
+
+            Dim usagePath As String = "/organization/usage/completions?start_time=" & startTime.ToString() & "&end_time=" & endTime.ToString() & "&bucket_width=1d"
+            Dim usageCheck As JObject = Await OpenAIDiagnosticRequestAsync(baseUrl, apiKey, usagePath, HttpMethod.Get, Nothing)
+            result("organization_usage_last_24h") = SummarizeOptionalAdminCheck(usageCheck, "Organization usage requires an Admin API key or equivalent organization permissions.")
+
+            Dim costsPath As String = "/organization/costs?start_time=" & startTime.ToString() & "&end_time=" & endTime.ToString() & "&bucket_width=1d"
+            Dim costsCheck As JObject = Await OpenAIDiagnosticRequestAsync(baseUrl, apiKey, costsPath, HttpMethod.Get, Nothing)
+            result("organization_costs_last_24h") = SummarizeOptionalAdminCheck(costsCheck, "Organization costs requires an Admin API key or equivalent organization permissions.")
+
+            If Not modelFound AndAlso modelsCheck.Value(Of Boolean)("success") Then
+                notes.Add("The configured model was not found in the accessible model list returned by /models. Verify OPENAI_MODEL or permissions for that model.")
+            End If
+
+            If responseCheck.Value(Of Boolean)("success") Then
+                result("success") = True
+                notes.Add("Basic OpenAI connectivity, API key authorization, model call, and per-call usage reporting succeeded.")
+            End If
+
+            notes.Add("The normal Responses API does not return a simple monthly tokens-remaining value. Use per-call usage, rate-limit headers, and organization usage/cost endpoints when available.")
+            result("duration_ms") = CInt(DateTime.UtcNow.Subtract(startedAt).TotalMilliseconds)
+            Return result
+        End Function
+
+        Private Shared Function BuildOpenAIDiagnosticResponseBody(model As String) As JObject
+            Return New JObject(
+                New JProperty("model", model),
+                New JProperty("input", "OpenAI connectivity check. Reply with exactly: OK"),
+                New JProperty("max_output_tokens", 16)
+            )
+        End Function
+
+        Private Shared Async Function OpenAIDiagnosticRequestAsync(baseUrl As String, apiKey As String, pathname As String, method As HttpMethod, requestJson As String) As Task(Of JObject)
+            Dim startedAt As DateTime = DateTime.UtcNow
+            Dim url As String = baseUrl.TrimEnd("/"c) & pathname
+
+            Using request As New HttpRequestMessage(method, url)
+                request.Headers.Authorization = New AuthenticationHeaderValue("Bearer", apiKey)
+
+                If requestJson IsNot Nothing Then
+                    request.Content = New StringContent(requestJson, Encoding.UTF8, "application/json")
+                End If
+
+                Try
+                    Using response As HttpResponseMessage = Await httpClient.SendAsync(request)
+                        Dim responseText As String = Await response.Content.ReadAsStringAsync()
+                        Dim payload As JObject = ParseJsonObjectOrRaw(responseText)
+                        Dim headers As JObject = UsefulOpenAIHeaders(response)
+
+                        Dim diagnostic As New JObject(
+                            New JProperty("success", response.IsSuccessStatusCode),
+                            New JProperty("http_status", CInt(response.StatusCode)),
+                            New JProperty("reason_phrase", response.ReasonPhrase),
+                            New JProperty("duration_ms", CInt(DateTime.UtcNow.Subtract(startedAt).TotalMilliseconds)),
+                            New JProperty("rate_limit_headers", headers),
+                            New JProperty("payload", payload)
+                        )
+
+                        Dim errorMessage As String = payload.SelectToken("error.message")?.ToString()
+                        If Not String.IsNullOrWhiteSpace(errorMessage) Then
+                            diagnostic("error_message") = errorMessage
+                        End If
+
+                        Return diagnostic
+                    End Using
+                Catch ex As Exception
+                    Return New JObject(
+                        New JProperty("success", False),
+                        New JProperty("http_status", 0),
+                        New JProperty("duration_ms", CInt(DateTime.UtcNow.Subtract(startedAt).TotalMilliseconds)),
+                        New JProperty("error_message", ex.Message),
+                        New JProperty("payload", New JObject())
+                    )
+                End Try
+            End Using
+        End Function
+
+        Private Shared Function SummarizeOptionalAdminCheck(checkResult As JObject, unavailableMessage As String) As JObject
+            Dim summary As New JObject(
+                New JProperty("success", checkResult.Value(Of Boolean)("success")),
+                New JProperty("http_status", checkResult.Value(Of Integer?)("http_status")),
+                New JProperty("duration_ms", checkResult.Value(Of Integer?)("duration_ms"))
+            )
+
+            If checkResult.Value(Of Boolean)("success") Then
+                summary("available") = True
+                summary("payload") = If(checkResult("payload") IsNot Nothing, checkResult("payload").DeepClone(), New JObject())
+            Else
+                summary("available") = False
+                summary("message") = unavailableMessage
+                summary("error_message") = checkResult("error_message")?.ToString()
+                summary("payload") = If(checkResult("payload") IsNot Nothing, checkResult("payload").DeepClone(), New JObject())
+            End If
+
+            Return summary
+        End Function
+
+        Private Shared Function ParseJsonObjectOrRaw(responseText As String) As JObject
+            If String.IsNullOrWhiteSpace(responseText) Then
+                Return New JObject()
+            End If
+
+            Try
+                Return JObject.Parse(responseText)
+            Catch
+                Return New JObject(New JProperty("raw", responseText))
+            End Try
+        End Function
+
+        Private Shared Function UsefulOpenAIHeaders(response As HttpResponseMessage) As JObject
+            Dim result As New JObject()
+            AddUsefulHeaderValues(result, response.Headers)
+            If response.Content IsNot Nothing Then
+                AddUsefulHeaderValues(result, response.Content.Headers)
+            End If
+            Return result
+        End Function
+
+        Private Shared Sub AddUsefulHeaderValues(result As JObject, headers As System.Net.Http.Headers.HttpHeaders)
+            For Each header As KeyValuePair(Of String, IEnumerable(Of String)) In headers
+                Dim key As String = header.Key
+                Dim lowerKey As String = key.ToLowerInvariant()
+
+                If lowerKey.StartsWith("x-ratelimit-") OrElse lowerKey = "retry-after" OrElse lowerKey = "openai-processing-ms" OrElse lowerKey = "x-request-id" Then
+                    result(key) = String.Join(",", header.Value)
+                End If
+            Next
+        End Sub
+
+        Private Shared Function MaskSecret(value As String) As String
+            If String.IsNullOrWhiteSpace(value) Then
+                Return ""
+            End If
+
+            If value.Length <= 12 Then
+                Return New String("*"c, value.Length)
+            End If
+
+            Return value.Substring(0, 7) & "..." & value.Substring(value.Length - 4)
         End Function
 
         Private Shared Function ToPascalCase(value As String) As String
@@ -1113,8 +1397,8 @@ Namespace intapi
 
         Private Shared Function LoadPrompt(promptRoot As String, fileName As String, fallbackText As String) As String
             Dim filePath As String = Path.Combine(promptRoot, fileName)
-            If File.Exists(filePath) Then
-                Return File.ReadAllText(filePath).Trim()
+            If System.IO.File.Exists(filePath) Then
+                Return System.IO.File.ReadAllText(filePath).Trim()
             End If
             Return fallbackText
         End Function
